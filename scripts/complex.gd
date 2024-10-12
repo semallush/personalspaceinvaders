@@ -13,11 +13,12 @@ var rooms = [
 var room_index = 0
 
 var default_doors = {
-		"left": 0,
-		"right": 0,
-		"up": 0,
-		"down": 0
+		"left": Vector2i(0,0),
+		"right": Vector2i(0,0),
+		"up": Vector2i(0,0),
+		"down": Vector2i(0,0),
 }
+var door_coords = default_doors
 var door_translate = {
 		"left": "right",
 		"right": "left",
@@ -30,7 +31,6 @@ var door_place_player = {
 		"up": Vector2i(0,1),
 		"down": Vector2i(0,-1)
 }
-var door_coords = default_doors
 
 var tiles = {
 	"floor": Vector2i(randi_range(0,1),randi_range(0,1)),
@@ -114,7 +114,7 @@ func load_room(index, side) -> void:
 		door_coords["down"] = coord
 		writtenTiles.push_back(coord)
 		
-	var portal_to_pos = (door_coords[side]+door_place_player[side])*16
+	var portal_to_pos = (door_coords[side] + door_place_player[side])*16
 	playerNode.position = Vector2(portal_to_pos.x-4, portal_to_pos.y-24)
 	
 	for x in range(20):
