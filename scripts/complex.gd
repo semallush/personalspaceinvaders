@@ -9,17 +9,20 @@ var rooms = [
 ]
 
 var tiles = {
-	"floor": Vector2i(0,0),
-	"wall": Vector2i(0,1),
-	"nothing": Vector2i(1,0),
+	"floor": Vector2i(1,1),
+	"wall_top": Vector2i(1,2),
+	"wall_side": Vector2i(0,2),
+	"nothing": Vector2i(0,0),
+	"door_up_upper": Vector2i(2,0),
+	"door_up_lower": Vector2i(2,1),
+	"door_up_top": Vector2i(2,2),
+	"door_left": Vector2i(3,0),
+	"door_right": Vector2i(3,1),
+	"doormat": Vector2i(3,2),
 }
 
 func _ready() -> void:
 	load_room(0,"left")
-	#roomNode.set_cell(coords: Vector2i, 
-						#source_id: int = -1, 
-						#atlas_coords: Vector2i = Vector2i(-1, -1), 
-						#alternative_tile: int = 0)
 
 func _process(delta: float) -> void:
 	pass
@@ -34,19 +37,20 @@ func load_room(index, side) -> void:
 		"down": 9 + loading_room.height/2,
 	}
 	
+	roomNode.clear()
 	var writtenTiles = []
 	if(loading_room.doors["left"].exists):
 		var coord = Vector2i(walls["left"], walls["up"] + loading_room.doors["left"].coord)
 		roomNode.set_cell( coord, 0, tiles["door_left"])
 		writtenTiles.push_back(coord)
-		coord = Vector2i(coord.x + 1, coord.y + 1)
+		coord = Vector2i(coord.x + 1, coord.y + 2)
 		roomNode.set_cell( coord, 0, tiles["doormat"])
 		writtenTiles.push_back(coord)
 	if(loading_room.doors["right"].exists):
 		var coord = Vector2i(walls["right"], walls["up"] + loading_room.doors["right"].coord)
 		roomNode.set_cell( coord, 0, tiles["door_right"])
 		writtenTiles.push_back(coord)
-		coord = Vector2i(coord.x - 1, coord.y + 1)
+		coord = Vector2i(coord.x - 1, coord.y + 2)
 		roomNode.set_cell( coord, 0, tiles["doormat"])
 		writtenTiles.push_back(coord)
 	if(loading_room.doors["up"].exists):
@@ -63,11 +67,10 @@ func load_room(index, side) -> void:
 		roomNode.set_cell( coord, 0, tiles["doormat"])
 		writtenTiles.push_back(coord)
 	if(loading_room.doors["down"].exists):
-		var coord = Vector2i( walls["left"] + loading_room.doors["down"].coord, walls["down"] - 1)
+		var coord = Vector2i( walls["left"] + loading_room.doors["down"].coord, walls["down"])
 		roomNode.set_cell( coord, 0, tiles["doormat"])
 		writtenTiles.push_back(coord)
 	
-	roomNode.clear()
 	for x in range(20):
 		for y in range(20):
 			if(writtenTiles.has(Vector2i(x,y))):
@@ -77,17 +80,15 @@ func load_room(index, side) -> void:
 				y < walls["up"] || 
 				y > walls["down"] ):
 				tilestring = "nothing"
-			elif( x == walls["left"] || 
-				x == walls["right"] || 
-				y == walls["up"] || 
-				y == walls["down"] ):
+			elif( ( y < walls["down"] - 1) && (x == walls["left"] || (x == walls["right"])) || 
+				y == walls["up"] ):
 				tilestring = "wall_top"
 			elif( (x > walls["left"] &&
 				  x < walls["right"] &&
-				(y == walls["up"] - 1 || y == walls["up"] - 2)) ||
+				(y == walls["up"] + 1 || y == walls["up"] + 2)) ||
 				 ((x == walls["left"] ||
 				  x == walls["right"]) &&
-				(y == walls["down"] - 1 || y == walls["down"] - 2))):
+				(y == walls["down"] - 1 || y == walls["down"]))):
 				tilestring = "wall_side"
 			else:
 				tilestring = "floor"
