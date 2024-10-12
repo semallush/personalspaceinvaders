@@ -45,6 +45,8 @@ var tiles = {
 	"doormat": Vector2i(3,2),
 }
 
+var firstRoom = true
+
 func _ready() -> void:
 	load_room(0,"left")
 
@@ -113,9 +115,11 @@ func load_room(index, side) -> void:
 		roomNode.set_cell( coord, 0, tiles["doormat"])
 		door_coords["down"] = coord
 		writtenTiles.push_back(coord)
-		
-	var portal_to_pos = (door_coords[side] + door_place_player[side])*16
-	playerNode.position = Vector2(portal_to_pos.x-4, portal_to_pos.y-24)
+	
+	if(!firstRoom):
+		var portal_to_pos = (door_coords[side] + door_place_player[side])*16
+		playerNode.position = Vector2(portal_to_pos.x-4, portal_to_pos.y-24)
+	firstRoom = false
 	
 	for x in range(20):
 		for y in range(20):

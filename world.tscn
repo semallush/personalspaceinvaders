@@ -74,7 +74,7 @@ position = Vector2(11, 19)
 shape = SubResource("RectangleShape2D_hb2i8")
 
 [node name="lenin" type="CharacterBody2D" parent="."]
-position = Vector2(189, 132)
+position = Vector2(150, 132)
 script = ExtResource("2_y1o64")
 
 [node name="Pig01" type="Sprite2D" parent="lenin"]
