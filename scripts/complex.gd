@@ -53,7 +53,7 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	var player_tile = Vector2i(floor((playerNode.position.x)/16), floor((playerNode.position.y)/16))
 	var doorkey = door_coords.find_key(player_tile)
-	if(doorkey):
+	if(doorkey && !playerNode.isStepping):
 		var newroom = rooms[room_index].doors[doorkey].room_index
 		#print('from ', room_index, ' to ', newroom)
 		if(newroom != null):

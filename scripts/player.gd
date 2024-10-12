@@ -1,29 +1,92 @@
 extends CharacterBody2D
 
+
+@onready
+var roomNode = get_node("../room")
+
 var canMove = true
+
+var isStepping = false
+
+# pixels per frame
+var speed = 1
+var stepSize = 16
+var currentSubStep = 0
+
+# 0:up, 1:right, 2:down, 3:left
+var stepDir = -1
+var stepStart = Vector2i(0,0)
+
+var collisionTiles = {
+	"wall_top": Vector2i(1,2),
+	"wall_side": Vector2i(0,2),
+	"nothing": Vector2i(0,3),
+	"door_up_upper": Vector2i(2,0),
+	"door_up_lower": Vector2i(2,1),
+	"door_up_top": Vector2i(2,2),
+	"door_left": Vector2i(3,0),
+	"door_right": Vector2i(3,1)
+}
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	
+	updateStep()
+	
+	var playerTile = Vector2i(floor((position.x)/16), floor((position.y)/16))
+	
 	if Input.is_action_pressed("left"):
-		if canMove:
-			position.x -= 16
-			canMove = false
+		if nextTileWalkable(playerTile, 3):
+			startStep(3)
 	if Input.is_action_pressed("up"):
-		if canMove:
-			position.y -= 16
-			canMove = false
+		if nextTileWalkable(playerTile, 0):
+			startStep(0)
 	if Input.is_action_pressed("right"):
-		if canMove:
-			position.x += 16
-			canMove = false
+		if nextTileWalkable(playerTile, 1):
+			startStep(1)
 	if Input.is_action_pressed("down"):
-		if canMove:
-			position.y += 16
-			canMove = false
-	if Input.is_action_just_released("left") || Input.is_action_just_released("up") || Input.is_action_just_released("right") || Input.is_action_just_released("down"):
-		canMove = true
+		if nextTileWalkable(playerTile, 2):
+			startStep(2)
 		
+func startStep(dir: int) -> void:
+	if !isStepping:
+			stepStart = Vector2i(position.x, position.y)
+			stepDir = dir
+			isStepping = true
+func updateStep() -> void:
+	if isStepping:
+		if currentSubStep < stepSize:
+			currentSubStep += speed
+			match stepDir:
+				0:
+					position.y = stepStart.y - currentSubStep
+				1:
+					position.x = stepStart.x + currentSubStep
+				2:
+					position.y = stepStart.y + currentSubStep
+				3:
+					position.x = stepStart.x - currentSubStep
+		else:
+				isStepping = false
+				currentSubStep = 0
+func nextTileWalkable(playerTile: Vector2i, dir: int) -> bool:
+		var nextTile = Vector2i(playerTile.x, playerTile.y-1)
+		match dir:
+			1:
+				nextTile = Vector2i(playerTile.x+1, playerTile.y)
+			2:
+				nextTile = Vector2i(playerTile.x, playerTile.y+1)
+			3:
+				nextTile = Vector2i(playerTile.x-1, playerTile.y)	
+		
+		var nextTileType = roomNode.get_cell_atlas_coords(nextTile)
+		for tile in collisionTiles:
+			if collisionTiles[tile] == nextTileType:
+				return false
+		return true
+				
