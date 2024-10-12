@@ -66,3 +66,14 @@ texture = ExtResource("2_jo84j")
 visible = false
 position = Vector2(11, 19)
 shape = SubResource("RectangleShape2D_hb2i8")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="pig"]
+
+[node name="NavigationRegion2D" type="NavigationRegion2D" parent="."]
+visible = false
+navigation_polygon = SubResource("NavigationPolygon_p8c40")
+
+[node name="minimap" type="ColorRect" parent="."]
+offset_right = 96.0
+offset_bottom = 68.0
+color = Color(0, 0, 0, 0.380392)
