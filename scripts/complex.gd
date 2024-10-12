@@ -51,7 +51,7 @@ func _ready() -> void:
 	load_room(0,"left")
 
 func _process(delta: float) -> void:
-	var player_tile = Vector2i(floor((playerNode.position.x+8)/16), floor((playerNode.position.y+30)/16))
+	var player_tile = Vector2i(floor((playerNode.position.x)/16), floor((playerNode.position.y)/16))
 	var doorkey = door_coords.find_key(player_tile)
 	if(doorkey):
 		var newroom = rooms[room_index].doors[doorkey].room_index
@@ -118,7 +118,7 @@ func load_room(index, side) -> void:
 	
 	if(!firstRoom):
 		var portal_to_pos = (door_coords[side] + door_place_player[side])*16
-		playerNode.position = Vector2(portal_to_pos.x-4, portal_to_pos.y-24)
+		playerNode.position = Vector2(portal_to_pos.x+8, portal_to_pos.y)
 	firstRoom = false
 	
 	for x in range(20):

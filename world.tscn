@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=4 uid="uid://b17gf0yb4000b"]
+[gd_scene load_steps=14 format=4 uid="uid://cmih4y5vjkps8"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
 [ext_resource type="Texture2D" uid="uid://bud88vu3odnr6" path="res://assets/floors01.png" id="2_h3ege"]
@@ -74,17 +74,18 @@ position = Vector2(11, 19)
 shape = SubResource("RectangleShape2D_hb2i8")
 
 [node name="lenin" type="CharacterBody2D" parent="."]
-position = Vector2(150, 132)
+position = Vector2(152.63, 133.215)
 script = ExtResource("2_y1o64")
 
 [node name="Pig01" type="Sprite2D" parent="lenin"]
 texture_filter = 1
-position = Vector2(11, 19)
+position = Vector2(0, -8)
+scale = Vector2(0.951, 1)
 texture = ExtResource("5_puu8m")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="lenin"]
 visible = false
-position = Vector2(11, 19)
+position = Vector2(0.649, -4.145)
 shape = SubResource("RectangleShape2D_hb2i8")
 
 [node name="pig" type="CharacterBody2D" parent="."]
