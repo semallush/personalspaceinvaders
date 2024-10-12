@@ -88,7 +88,6 @@ position = Vector2(11, 19)
 shape = SubResource("RectangleShape2D_hb2i8")
 
 [node name="pig" type="CharacterBody2D" parent="."]
-visible = false
 position = Vector2(137, 170)
 script = ExtResource("6_6n84r")
 

@@ -34,7 +34,7 @@ func _init(start_index, start_side) -> void:
 			doors[door].exists = true;
 			doors[door].room_index = start_index;
 		else:
-			doors[door].exists = randf() > 0.1
+			doors[door].exists = randf() < 0.5
 		if(doors[door].exists && (door == "left" || door == "right")):
 			doors[door].coord = randi_range(1,height-5)
 		if(doors[door].exists && (door == "up" || door == "down")):
