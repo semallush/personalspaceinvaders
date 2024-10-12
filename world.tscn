@@ -1,15 +1,15 @@
 [gd_scene load_steps=14 format=4 uid="uid://cmih4y5vjkps8"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
-[ext_resource type="Texture2D" uid="uid://4y4vhicgld4u" path="res://assets/tiles/room_tiles_01.png" id="2_f5k0h"]
 [ext_resource type="Texture2D" uid="uid://bud88vu3odnr6" path="res://assets/floors01.png" id="2_h3ege"]
 [ext_resource type="Texture2D" uid="uid://bodior26v4o0e" path="res://assets/pig01.png" id="2_jo84j"]
+[ext_resource type="Texture2D" uid="uid://bx2y0trpk13cd" path="res://assets/tiles/room_tiles_011.png" id="2_wd2rs"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_y1o64"]
 [ext_resource type="Texture2D" uid="uid://dq1fwp8qit5j0" path="res://assets/lenin.png" id="5_puu8m"]
 [ext_resource type="Script" path="res://pig.gd" id="6_6n84r"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rd2qe"]
-texture = ExtResource("2_f5k0h")
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_00yc5"]
+texture = ExtResource("2_wd2rs")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -22,9 +22,11 @@ texture = ExtResource("2_f5k0h")
 1:2/0 = 0
 2:2/0 = 0
 3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_sohup"]
-sources/0 = SubResource("TileSetAtlasSource_rd2qe")
+sources/0 = SubResource("TileSetAtlasSource_00yc5")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_7aojs"]
 texture = ExtResource("2_h3ege")
@@ -86,6 +88,7 @@ position = Vector2(11, 19)
 shape = SubResource("RectangleShape2D_hb2i8")
 
 [node name="pig" type="CharacterBody2D" parent="."]
+visible = false
 position = Vector2(137, 170)
 script = ExtResource("6_6n84r")
 

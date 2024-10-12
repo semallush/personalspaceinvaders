@@ -4,15 +4,39 @@ var room = load("res://scripts/room.gd")
 @onready
 var roomNode = get_node("room")
 
+@onready
+var playerNode = get_node("lenin")
+
 var rooms = [
 	room.new(null, null)
 ]
+var room_index = 0
+
+var default_doors = {
+		"left": 0,
+		"right": 0,
+		"up": 0,
+		"down": 0
+}
+var door_translate = {
+		"left": "right",
+		"right": "left",
+		"up": "down",
+		"down": "up"
+}
+var door_place_player = {
+		"left": Vector2i(1,0),
+		"right": Vector2i(-1,0),
+		"up": Vector2i(0,1),
+		"down": Vector2i(0,-1)
+}
+var door_coords = default_doors
 
 var tiles = {
-	"floor": Vector2i(1,1),
+	"floor": Vector2i(randi_range(0,1),randi_range(0,1)),
 	"wall_top": Vector2i(1,2),
 	"wall_side": Vector2i(0,2),
-	"nothing": Vector2i(0,0),
+	"nothing": Vector2i(0,3),
 	"door_up_upper": Vector2i(2,0),
 	"door_up_lower": Vector2i(2,1),
 	"door_up_top": Vector2i(2,2),
@@ -25,7 +49,22 @@ func _ready() -> void:
 	load_room(0,"left")
 
 func _process(delta: float) -> void:
-	pass
+	var player_tile = Vector2i(floor((playerNode.position.x+8)/16), floor((playerNode.position.y+30)/16))
+	var doorkey = door_coords.find_key(player_tile)
+	if(doorkey):
+		var newroom = rooms[room_index].doors[doorkey].room_index
+		#print('from ', room_index, ' to ', newroom)
+		if(newroom != null):
+			room_index = newroom
+			load_room(room_index, door_translate[doorkey])
+		if(newroom == null):
+			rooms.push_back(room.new(room_index, door_translate[doorkey]))
+			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
+			room_index = rooms.size()-1
+			load_room(room_index, door_translate[doorkey])
+		#print(rooms[room_index].doors)
+		#print('going through ', doorkey, ' to ', room_index, ' at ', door_translate[doorkey])
+
 
 func load_room(index, side) -> void:
 	var loading_room = rooms[index]
@@ -45,6 +84,7 @@ func load_room(index, side) -> void:
 		writtenTiles.push_back(coord)
 		coord = Vector2i(coord.x + 1, coord.y + 2)
 		roomNode.set_cell( coord, 0, tiles["doormat"])
+		door_coords["left"] = coord
 		writtenTiles.push_back(coord)
 	if(loading_room.doors["right"].exists):
 		var coord = Vector2i(walls["right"], walls["up"] + loading_room.doors["right"].coord)
@@ -52,6 +92,7 @@ func load_room(index, side) -> void:
 		writtenTiles.push_back(coord)
 		coord = Vector2i(coord.x - 1, coord.y + 2)
 		roomNode.set_cell( coord, 0, tiles["doormat"])
+		door_coords["right"] = coord
 		writtenTiles.push_back(coord)
 	if(loading_room.doors["up"].exists):
 		var coord = Vector2i(walls["left"] + loading_room.doors["up"].coord, walls["up"])
@@ -65,11 +106,16 @@ func load_room(index, side) -> void:
 		writtenTiles.push_back(coord)
 		coord = Vector2i(coord.x, coord.y + 1)
 		roomNode.set_cell( coord, 0, tiles["doormat"])
+		door_coords["up"] = coord
 		writtenTiles.push_back(coord)
 	if(loading_room.doors["down"].exists):
 		var coord = Vector2i( walls["left"] + loading_room.doors["down"].coord, walls["down"])
 		roomNode.set_cell( coord, 0, tiles["doormat"])
+		door_coords["down"] = coord
 		writtenTiles.push_back(coord)
+		
+	var portal_to_pos = (door_coords[side]+door_place_player[side])*16
+	playerNode.position = Vector2(portal_to_pos.x-4, portal_to_pos.y-24)
 	
 	for x in range(20):
 		for y in range(20):
@@ -91,8 +137,11 @@ func load_room(index, side) -> void:
 				(y == walls["down"] - 1 || y == walls["down"]))):
 				tilestring = "wall_side"
 			else:
-				tilestring = "floor"
+				roomNode.set_cell(Vector2i(x, y), 0, loading_room.floor_tile)
+				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
+	
+	print(door_coords)
 
 #func generate_room(prev_index, door) -> room:
 	#return room.new(prev_index, door)
