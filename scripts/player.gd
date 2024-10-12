@@ -4,7 +4,8 @@ extends CharacterBody2D
 @onready
 var roomNode = get_node("../room")
 
-var canMove = true
+@onready
+var pigNode = get_node("../pig")
 
 var isStepping = false
 
@@ -16,6 +17,8 @@ var currentSubStep = 0
 # 0:up, 1:right, 2:down, 3:left
 var stepDir = -1
 var stepStart = Vector2i(0,0)
+
+var playerTile = null
 
 var collisionTiles = {
 	"wall_top": Vector2i(1,2),
@@ -38,7 +41,7 @@ func _process(delta: float) -> void:
 	
 	updateStep()
 	
-	var playerTile = Vector2i(floor((position.x)/16), floor((position.y)/16))
+	playerTile = Vector2i(floor((position.x)/16), floor((position.y)/16))
 	
 	if Input.is_action_pressed("left"):
 		if nextTileWalkable(playerTile, 3):
@@ -52,8 +55,11 @@ func _process(delta: float) -> void:
 	if Input.is_action_pressed("down"):
 		if nextTileWalkable(playerTile, 2):
 			startStep(2)
-		
+	
+	if Input.is_action_just_released("left") || Input.is_action_just_released("up") || Input.is_action_just_released("down") || Input.is_action_just_released("right"):
+		pigNode.updatePath()
 func startStep(dir: int) -> void:
+	
 	if !isStepping:
 			stepStart = Vector2i(position.x, position.y)
 			stepDir = dir
