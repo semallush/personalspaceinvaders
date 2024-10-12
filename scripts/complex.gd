@@ -70,12 +70,10 @@ func _process(delta: float) -> void:
 			room_index = newroom
 			load_room(room_index, door_translate[doorkey])
 		if(newroom == null):
-			print(door_coords[doorkey])
 			rooms.push_back(room.new(
 				room_index, 
 				door_translate[doorkey], 
-				rooms[room_index].world_coord + door_coords[doorkey] 
-					- Vector2i(rooms[room_index].width, rooms[room_index].height))
+				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]))
 				)
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
@@ -83,9 +81,6 @@ func _process(delta: float) -> void:
 			map_room(room_index)
 			
 			load_room(room_index, door_translate[doorkey])
-		#print(rooms[room_index].doors)
-		#print('going through ', doorkey, ' to ', room_index, ' at ', door_translate[doorkey])
-
 
 func load_room(index, side) -> void:
 	var loading_room = rooms[index]
@@ -163,17 +158,14 @@ func load_room(index, side) -> void:
 				roomNode.set_cell(Vector2i(x, y), 0, loading_room.floor_tile)
 				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
-	
-	print(door_coords)
 
 func map_room(room_index) -> void:
 	
-	var roomsize = Vector2(rooms[room_index].width, rooms[room_index].height)
+	var roomsize = Vector2(rooms[room_index].width-2, rooms[room_index].height-2)
 	var roomcoord = rooms[room_index].world_coord
 	
 	var new_room_map_outside = ColorRect.new()
 	minimap.add_child(new_room_map_outside)
-	print(minimap.get_child_count())
 	new_room_map_outside.set_begin(
 		minimap.get_size()/2 + Vector2(roomcoord)
 	)
@@ -185,7 +177,28 @@ func map_room(room_index) -> void:
 	new_room_map_inside.set_size(new_room_map_outside.get_size() - Vector2(linewidth*2, linewidth*2))
 	new_room_map_inside.set_color(Color(0,0,0))
 	
-	var door_line = ColorRect.new()
+	for doorkey in rooms[room_index].doors:
+		var door = rooms[room_index].doors[doorkey]
+		if(door.exists):
+			var door_line = ColorRect.new()
+			new_room_map_outside.add_child(door_line)
+			door_line.set_begin(Vector2i(
+				door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x if (doorkey=="right") else 0, 
+				door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y if (doorkey=="down") else 0)
+				+ doormapoffset[doorkey]
+			)
+			door_line.set_size(doormaplinesize[doorkey])
+			door_line.set_color(Color(1,0,0))
 
-#func generate_room(prev_index, door) -> room:
-	#return room.new(prev_index, door)
+var doormapoffset = {
+		"left": Vector2i(0,0),
+		"right": Vector2i(-1,0),
+		"up": Vector2i(-1,0),
+		"down": Vector2i(-1,-1)
+}
+var doormaplinesize = {
+		"left": Vector2i(1,2),
+		"right": Vector2i(1,2),
+		"up": Vector2i(2,1),
+		"down": Vector2i(2,1)
+}
