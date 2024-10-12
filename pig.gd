@@ -54,10 +54,10 @@ func _process(delta):
 		if path.size() > 0 && pathIndex < path.size()-1:
 			var nextTile = path[pathIndex+1]
 			var dir = 0
-			print(nextTile)
-			print(pigTile)
-			print('----')
-			print(nextTile.y)
+			#print(nextTile)
+			#print(pigTile)
+			#print('----')
+			#print(nextTile.y)
 			if nextTile.y < pigTile.y:
 				dir = 0
 			elif nextTile.x > pigTile.x:
@@ -101,4 +101,4 @@ func updateStep() -> void:
 func updatePath() -> void:
 	path = astar_grid.get_id_path(pigTile, perp, true)
 	pathIndex = 0
-	print(path)
+	#print(path)
