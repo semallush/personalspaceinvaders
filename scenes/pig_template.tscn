@@ -1,8 +1,13 @@
-[gd_scene load_steps=5 format=3 uid="uid://c26qhqxmpp3ce"]
+[gd_scene load_steps=10 format=3 uid="uid://c26qhqxmpp3ce"]
 
 [ext_resource type="Script" path="res://pig.gd" id="1_3o8s4"]
 [ext_resource type="Texture2D" uid="uid://bodior26v4o0e" path="res://assets/pig01.png" id="2_emc4j"]
 [ext_resource type="AudioStream" uid="uid://f38y73536aoq" path="res://assets/audio/step.mp3" id="3_mpth5"]
+[ext_resource type="AudioStream" uid="uid://xl8d5ma2rtw6" path="res://assets/audio/dialog01.mp3" id="4_x57gp"]
+[ext_resource type="AudioStream" uid="uid://dd2rna6b1h3rd" path="res://assets/audio/dialog02.mp3" id="5_htsh4"]
+[ext_resource type="AudioStream" uid="uid://dle3vho5giya6" path="res://assets/audio/dialog03.mp3" id="6_0bhyd"]
+[ext_resource type="AudioStream" uid="uid://c0emapbrw303i" path="res://assets/audio/dialog04.mp3" id="7_l6jbo"]
+[ext_resource type="AudioStream" uid="uid://jekc6lawwcib" path="res://assets/audio/halt.mp3" id="8_c6lvo"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hb2i8"]
 size = Vector2(20, 40)
@@ -23,4 +28,24 @@ shape = SubResource("RectangleShape2D_hb2i8")
 
 [node name="step_sfx" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("3_mpth5")
+volume_db = -3.048
+
+[node name="dialog01" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_x57gp")
+volume_db = -8.381
+
+[node name="dialog02" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("5_htsh4")
+volume_db = -8.0
+
+[node name="dialog03" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("6_0bhyd")
+volume_db = -8.0
+
+[node name="dialog04" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("7_l6jbo")
+volume_db = -7.619
+
+[node name="halt" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("8_c6lvo")
 volume_db = -3.048

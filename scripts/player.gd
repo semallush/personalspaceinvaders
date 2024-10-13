@@ -13,6 +13,9 @@ var precinct = get_node("../precinct")
 var bg_audio = get_node("../bg_audio")
 
 @onready
+var money_audio = get_node("../money_sfx")
+
+@onready
 var step_audio = get_node("../step_sfx")
 
 @onready
@@ -117,3 +120,5 @@ func increaseScore(amount: int) -> void:
 	score += amount
 	var scoreText = "credit score: " + str(score)
 	score_label.text = scoreText
+
+	money_audio.play()

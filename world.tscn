@@ -1,4 +1,4 @@
-[gd_scene load_steps=57 format=4 uid="uid://b17gf0yb4000b"]
+[gd_scene load_steps=61 format=4 uid="uid://b17gf0yb4000b"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
 [ext_resource type="Texture2D" uid="uid://di7ggxk1qhur4" path="res://assets/tiles/room_tiles_012.png" id="2_rh4nk"]
@@ -41,6 +41,10 @@
 [ext_resource type="Texture2D" uid="uid://bkj3urghtg12t" path="res://assets/ui/dots2.png" id="35_6larv"]
 [ext_resource type="Texture2D" uid="uid://dsjct42ut3ra2" path="res://assets/ui/dots3.png" id="36_gegs8"]
 [ext_resource type="AudioStream" uid="uid://f38y73536aoq" path="res://assets/audio/step.mp3" id="41_xetwr"]
+[ext_resource type="AudioStream" uid="uid://dxgdhnmibc01c" path="res://assets/audio/ui.mp3" id="42_pw04o"]
+[ext_resource type="AudioStream" uid="uid://bfaw8a3amvavh" path="res://assets/audio/ui_open.mp3" id="43_l0pg2"]
+[ext_resource type="AudioStream" uid="uid://ddtsycybgpv8d" path="res://assets/audio/ui_close.mp3" id="44_1c7so"]
+[ext_resource type="AudioStream" uid="uid://brbm7ea8xrfxo" path="res://assets/audio/money.mp3" id="45_sdkqw"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ga6im"]
 texture = ExtResource("2_rh4nk")
@@ -379,3 +383,19 @@ volume_db = -3.048
 [node name="step_sfx" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("41_xetwr")
 volume_db = -3.048
+
+[node name="ui_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("42_pw04o")
+volume_db = -3.048
+
+[node name="ui_open_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("43_l0pg2")
+volume_db = -12.191
+
+[node name="ui_close_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("44_1c7so")
+volume_db = -12.191
+
+[node name="money_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("45_sdkqw")
+volume_db = -2.23

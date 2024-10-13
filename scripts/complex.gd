@@ -90,11 +90,16 @@ func _process(delta: float) -> void:
 			if !pigs_exist:
 				playerNode.increaseScore(100)
 				var count = randi_range(0,2)
-				precinctNode.inventPig(count, room_index)
+				#precinctNode.inventPig(count, room_index)
+				#if (count>0):
+					#pigs_exist = true
+			if pigs_exist:
+				
+				uinode.toggle_cop_highlight(room_index, true)
 					 
 		var newroom = rooms[room_index].doors[doorkey].room_index
 		
-		uinode.toggle_player_highlight(room_index, false)
+		#uinode.toggle_player_highlight(room_index, false)
 		if(newroom != null):
 			room_index = newroom
 			load_room(room_index, door_translate[doorkey])
@@ -106,7 +111,7 @@ func _process(delta: float) -> void:
 				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]),
 				rooms[room_index].doors[doorkey].mapped,
 				rooms,
-				rooms.size()-1
+				rooms.size()
 			))
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
@@ -116,7 +121,7 @@ func _process(delta: float) -> void:
 
 func load_room(index, side) -> void:
 	
-	uinode.toggle_player_highlight(index, true)
+	#uinode.toggle_player_highlight(index, true)
 	
 	var loading_room = rooms[index]
 	var tilestring

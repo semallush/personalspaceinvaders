@@ -12,6 +12,17 @@ var astar_grid = AStarGrid2D.new()
 ##var playerNode = get_node("../lenin")
 @onready
 var step_audio = get_node("step_sfx")
+@onready
+var dialog01 = get_node("dialog01")
+@onready
+var dialog02 = get_node("dialog02")
+@onready
+var dialog03 = get_node("dialog03")
+@onready
+var dialog04 = get_node("dialog04")
+@onready
+var halt = get_node("halt")
+
 
 
 
@@ -45,7 +56,27 @@ func _ready():
 	
 func _process(delta):
 	if (playerNode != null && worldNode != null && roomNode != null):
-
+		
+		
+		if randf() < 0.01:
+			var i = randi_range(0,4)
+			match i:
+				0:
+					dialog01.pitch_scale=randf_range(0.8,1.2)
+					dialog01.play()
+				1:
+					dialog02.pitch_scale=randf_range(0.8,1.2)
+					dialog02.play()
+				2:
+					dialog03.pitch_scale=randf_range(0.8,1.2)
+					dialog03.play()
+				3:
+					dialog04.pitch_scale=randf_range(0.8,1.2)
+					dialog04.play()
+				4:
+					halt.pitch_scale=randf_range(0.8,1.2)
+					halt.play()
+		
 		perp = playerNode.playerTile
 		
 		pigTile = Vector2i(floor((position.x)/16), floor((position.y)/16))
