@@ -6,7 +6,7 @@
 [ext_resource type="Texture2D" uid="uid://bx2y0trpk13cd" path="res://assets/tiles/room_tiles_011.png" id="2_wd2rs"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_y1o64"]
 [ext_resource type="Texture2D" uid="uid://dq1fwp8qit5j0" path="res://assets/lenin.png" id="5_puu8m"]
-[ext_resource type="Script" path="res://pig.gd" id="6_6n84r"]
+[ext_resource type="Script" path="res://precinct.gd" id="6_71l8g"]
 [ext_resource type="Texture2D" uid="uid://bapp1m3ma6ukl" path="res://assets/ui/ui_background.png" id="8_ncwy0"]
 [ext_resource type="Script" path="res://scripts/mapper.gd" id="9_rmak1"]
 [ext_resource type="Texture2D" uid="uid://chljmd35qrmm3" path="res://assets/ui/ln1.png" id="10_4m582"]
@@ -258,20 +258,6 @@ visible = false
 position = Vector2(0.649, -4.145)
 shape = SubResource("RectangleShape2D_hb2i8")
 
-[node name="pig" type="CharacterBody2D" parent="."]
-position = Vector2(137, 170)
-script = ExtResource("6_6n84r")
-
-[node name="Pig01" type="Sprite2D" parent="pig"]
-texture_filter = 1
-position = Vector2(11, 19)
-texture = ExtResource("2_jo84j")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="pig"]
-visible = false
-position = Vector2(11, 19)
-shape = SubResource("RectangleShape2D_hb2i8")
-
 [node name="minimap" type="ColorRect" parent="."]
 offset_right = 96.0
 offset_bottom = 68.0
@@ -339,3 +325,6 @@ centered = false
 position = Vector2(179, 186)
 sprite_frames = SubResource("SpriteFrames_106wr")
 centered = false
+
+[node name="precinct" type="Node" parent="."]
+script = ExtResource("6_71l8g")

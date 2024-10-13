@@ -4,13 +4,15 @@ extends CharacterBody2D
 @onready
 var roomNode = get_node("../room")
 
+#@onready
+#var pigNode = get_node("../pig")
 @onready
-var pigNode = get_node("../pig")
+var precinct = get_node("../precinct")
 
 var isStepping = false
 
 # pixels per frame
-var speed = 1
+var speed = 2
 var stepSize = 16
 var currentSubStep = 0
 
@@ -56,8 +58,7 @@ func _process(delta: float) -> void:
 		if nextTileWalkable(playerTile, 2):
 			startStep(2)
 	
-	if Input.is_action_just_released("left") || Input.is_action_just_released("up") || Input.is_action_just_released("down") || Input.is_action_just_released("right"):
-		pigNode.updatePath()
+	
 func startStep(dir: int) -> void:
 	
 	if !isStepping:
