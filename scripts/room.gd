@@ -3,6 +3,7 @@ extends Object
 var width = 0
 var height = 0
 var world_coord = Vector2i(0,0)
+var mapped = false
 var doors  = {
 	"left": {
 		exists = false,
