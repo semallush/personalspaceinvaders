@@ -56,24 +56,16 @@ var floor_tile = Vector2i(randi_range(0,1),randi_range(0,1))
 
 func _init(start_index, start_side, door_coord, mapped, rooms, index) -> void:
 	
-	#check_convergence(start_side, door_coord, rooms)
 	room_index = index
-	width = randi_range(10,18)
+	if(start_side):check_convergence(start_side, door_coord, rooms)
+	if(width == 0):
+		width = randi_range(max(5,doors["up"].coord, doors["down"].coord),18)
 	width += width%2
-	height = randi_range(10,18)
+	width = max(width,5)
+	if(height == 0):
+		height = randi_range(max(5,doors["left"].coord, doors["right"].coord),18)
 	height += height%2
-	for door in doors:
-		if(door == start_side):
-			doors[door].exists = true;
-			doors[door].room_index = start_index;
-			doors[door].mapped = mapped
-		else:
-			doors[door].exists = randf() < 0.8
-			
-		if(door == "left" || door == "right"):
-			doors[door].coord = randi_range(1,height-5)
-		if(door == "up" || door == "down"):
-			doors[door].coord = randi_range(1,width-3)
+	height = max(height,5)
 	
 	if(start_side):
 		world_coord = (door_coord 
@@ -81,6 +73,40 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index) -> void:
 			+ door_door_shift[start_side] * Vector2i(doors[start_side].coord,doors[start_side].coord)
 			+ door_door_offset[start_side]
 		)
+		
+	var check_rooms_direction = {
+		"left"=	Vector2i(-12, floor(height/2)),
+		"right"=Vector2i(width+12,floor(height/2)),
+		"up"=	Vector2i(floor(width/2),-12),
+		"down"=	Vector2i(floor(width/2), height+12)
+	}
+		
+	for door in doors:
+		if(door == start_side):
+			doors[door].exists = true
+			doors[door].room_index = start_index
+			doors[door].mapped = mapped
+		elif(doors[door].exists && doors[door].room_index != null):
+			print(rooms[doors[door].room_index].doors[door_translate[door]].mapped)
+			doors[door].mapped = rooms[doors[door].room_index].doors[door_translate[door]].mapped
+		else:
+			#check if theres some shit in the way????
+			var samplepos = world_coord+check_rooms_direction[door]
+			for room in rooms:
+				if(samplepos.x > room.world_coord.x && samplepos.y > room.world_coord.y
+					&& samplepos.x < room.world_coord.x + room.width && samplepos.y < room.world_coord.y + room.height):
+						continue
+				
+			doors[door].exists = randf() < 0.75
+			
+		if(doors[door].coord != 0): 
+			if(door=="left" || door=="right" ): doors[door].coord = min(doors[door].coord, height-5)
+			continue
+		if(door == "left" || door == "right"):
+			doors[door].coord = randi_range(1,height-5)
+		if(door == "up" || door == "down"):
+			doors[door].coord = randi_range(1,width-3)
+	
 
 func verify_mapping() -> void:
 	if(mapped):
@@ -97,6 +123,7 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 		"right_corner" = Vector2i(),
 		"opposite" = Vector2i()
 	}
+	
 	var check_dir = check_direction[start_side]
 	var check_window = {
 		"x0"= door_coord.x + check_dir.x*18,
@@ -108,13 +135,13 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 	var convergent_doors = []
 	
 	for room in rooms:
-		var roomsize = Vector2i(rooms[room].width-2, rooms[room].height-2)
-		for doorkey in rooms[room].doors:
-			var door = rooms[room].doors[doorkey]
+		var roomsize = Vector2i(room.width-2, room.height-2)
+		for doorkey in room.doors:
+			var door = room.doors[doorkey]
 			if(!door.exists || doorkey==door_translate[start_side] || door.room_index != null):
 				continue
 				
-			var doorcoord = rooms[room].world_coord + Vector2i(
+			var doorcoord = room.world_coord + Vector2i(
 				door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x if (doorkey=="right") else 0, 
 				door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y if (doorkey=="down") else 0)
 			
@@ -129,23 +156,27 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 					}
 					if(doorcoord.x > bettercheck["x0"] && doorcoord.y > bettercheck["y0"] &&
 						doorcoord.x < bettercheck["x1"] && doorcoord.y < bettercheck["y1"]):
-							convergent_doors.push_back({
-								"key"=door_translate[doorkey],
-								"doorcoord"=doorcoord,
-								"door"=door
-							})
-							doors[door_translate[doorkey]].exists = true
-							doors[door_translate[doorkey]].room_index = room
-							door.room_index = rooms.size()-1
+							if(start_side=="left"||start_side=="right"):
+								convergent_doors.push_back({
+									"key"=door_translate[doorkey],
+									"doorcoord"=doorcoord,
+									"door"=door,
+									"room_index"=room.room_index
+								})
+								doors[door_translate[doorkey]].exists = true
+								doors[door_translate[doorkey]].room_index = room.room_index
+								door.room_index = room_index
 	
 	if convergent_doors.size() > 0:
-		print(convergent_doors)
+		print('this room is: ', room_index)
+		print('convergent doors ', convergent_doors)
+		print('my doors are ', doors)
 		
 		var door = convergent_doors[0]
 		var ydiff = door["doorcoord"].y - door_coord.y
 		var xdiff = door["doorcoord"].x - door_coord.x
 		if start_side=="left":
-			match door["doorkey"]:
+			match door["key"]:
 				"up":
 					doors["left"].coord = door_coord.y - door["doorcoord"].y
 					doors["up"].coord = door["doorcoord"].x - door_coord.x
@@ -158,10 +189,10 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 					width = xdiff
 				"down":
 					doors["left"].coord = randi_range(1,18-ydiff)
-					height = doors["left"] + ydiff
+					height = doors["left"].coord + ydiff
 					doors["down"].coord = door["doorcoord"].x - door_coord.x
 		if start_side=="right":
-			match door["doorkey"]:
+			match door["key"]:
 				"up":
 					doors["right"].coord = door_coord.y - door["doorcoord"].y
 					doors["up"].coord = randi_range(1,18+xdiff)
@@ -175,12 +206,12 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 					doors["left"].coord = doors["right"].coord + ydiff
 				"down":
 					doors["down"].coord = randi_range(1,18+xdiff)
-					width = doors["up"].coord - xdiff
+					width = doors["down"].coord - xdiff
 					
-					doors["left"].coord = randi_range(1,18-ydiff)
-					height = doors["left"] + ydiff
+					doors["right"].coord = randi_range(1,18-ydiff)
+					height = doors["right"].coord + ydiff
 		#if start_side=="up":
-			#match door["doorkey"]:
+			#match door["key"]:
 				#"up":
 					#doors["left"].coord = door_coord.y - door["doorcoord"].y
 					#doors["up"].coord = door["doorcoord"].x - door_coord.x
@@ -194,7 +225,7 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 					#doors["left"].coord = randi_range(1,18-ydiff)
 					#height = doors["left"] + ydiff
 		#if start_side=="down":
-			#match door["doorkey"]:
+			#match door["key"]:
 				#"up":
 					#doors["left"].coord = door_coord.y - door["doorcoord"].y
 					#doors["up"].coord = door["doorcoord"].x - door_coord.x
