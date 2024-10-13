@@ -52,3 +52,14 @@ func updatearrows() -> void:
 		else:
 			arrows[arrow].get_child(1).show()
 			arrows[arrow].get_child(0).hide()
+
+func toggle_cop_highlight(room_index, on) -> void:
+	if(!get_node('../minimap/'+str(room_index)+'/inner')):return
+	if(on): get_node('../minimap/'+str(room_index)+'/inner').set_color(Color(0,0,1))
+	if(!on): get_node('../minimap/'+str(room_index)+'/inner').set_color(Color(0,0,0))
+
+func toggle_player_highlight(room_index, on) -> void:
+	if(!get_node('../minimap/'+str(room_index)+'/inner')):return
+	if(on): get_node('../minimap/'+str(room_index)+'/inner').set_color(Color(0.3,0.3,0.3))
+	if(!on): get_node('../minimap/'+str(room_index)+'/inner').set_color(Color(0.0,0.0,0.0))
+	

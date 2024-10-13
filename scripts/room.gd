@@ -68,7 +68,7 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index) -> void:
 			doors[door].room_index = start_index;
 			doors[door].mapped = mapped
 		else:
-			doors[door].exists = randf() < 0.5
+			doors[door].exists = randf() < 0.8
 			
 		if(door == "left" || door == "right"):
 			doors[door].coord = randi_range(1,height-5)
@@ -129,21 +129,85 @@ func check_convergence(start_side, door_coord, rooms) -> void:
 					}
 					if(doorcoord.x > bettercheck["x0"] && doorcoord.y > bettercheck["y0"] &&
 						doorcoord.x < bettercheck["x1"] && doorcoord.y < bettercheck["y1"]):
-							convergent_doors.push_back(door)
+							convergent_doors.push_back({
+								"key"=door_translate[doorkey],
+								"doorcoord"=doorcoord,
+								"door"=door
+							})
+							doors[door_translate[doorkey]].exists = true
+							doors[door_translate[doorkey]].room_index = room
+							door.room_index = rooms.size()-1
 	
 	if convergent_doors.size() > 0:
+		print(convergent_doors)
 		
-		for doorkey in convergent_doors:
-			match doorkey:
-				"left":
-					pass
-				"right":
-					pass
+		var door = convergent_doors[0]
+		var ydiff = door["doorcoord"].y - door_coord.y
+		var xdiff = door["doorcoord"].x - door_coord.x
+		if start_side=="left":
+			match door["doorkey"]:
 				"up":
-					pass
+					doors["left"].coord = door_coord.y - door["doorcoord"].y
+					doors["up"].coord = door["doorcoord"].x - door_coord.x
+				"right":
+					if(ydiff > 0):
+						doors["left"].coord = randi_range(1,18-ydiff)
+					else:
+						doors["left"].coord = randi_range(1-ydiff,18)
+					doors["right"].coord = doors["left"].coord + ydiff
+					width = xdiff
 				"down":
-					pass
-		
+					doors["left"].coord = randi_range(1,18-ydiff)
+					height = doors["left"] + ydiff
+					doors["down"].coord = door["doorcoord"].x - door_coord.x
+		if start_side=="right":
+			match door["doorkey"]:
+				"up":
+					doors["right"].coord = door_coord.y - door["doorcoord"].y
+					doors["up"].coord = randi_range(1,18+xdiff)
+					width = doors["up"].coord - xdiff
+				"left":
+					width = -1*xdiff
+					if(ydiff > 0):
+						doors["right"].coord = randi_range(1,18-ydiff)
+					else:
+						doors["right"].coord = randi_range(1-ydiff,18)
+					doors["left"].coord = doors["right"].coord + ydiff
+				"down":
+					doors["down"].coord = randi_range(1,18+xdiff)
+					width = doors["up"].coord - xdiff
+					
+					doors["left"].coord = randi_range(1,18-ydiff)
+					height = doors["left"] + ydiff
+		#if start_side=="up":
+			#match door["doorkey"]:
+				#"up":
+					#doors["left"].coord = door_coord.y - door["doorcoord"].y
+					#doors["up"].coord = door["doorcoord"].x - door_coord.x
+				#"right":
+					#if(ydiff > 0):
+						#doors["left"].coord = randi_range(1,18-ydiff)
+					#else:
+						#doors["left"].coord = randi_range(1-ydiff,18)
+					#doors["right"].coord = doors["left"].coord + ydiff
+				#"down":
+					#doors["left"].coord = randi_range(1,18-ydiff)
+					#height = doors["left"] + ydiff
+		#if start_side=="down":
+			#match door["doorkey"]:
+				#"up":
+					#doors["left"].coord = door_coord.y - door["doorcoord"].y
+					#doors["up"].coord = door["doorcoord"].x - door_coord.x
+				#"right":
+					#if(ydiff > 0):
+						#doors["left"].coord = randi_range(1,18-ydiff)
+					#else:
+						#doors["left"].coord = randi_range(1-ydiff,18)
+					#doors["right"].coord = doors["left"].coord + ydiff
+				#"down":
+					#doors["left"].coord = randi_range(1,18-ydiff)
+					#height = doors["left"] + ydiff
+						
 		
 
 var door_options = {
