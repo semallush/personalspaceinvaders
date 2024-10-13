@@ -79,6 +79,8 @@ func _process(delta: float) -> void:
 	if(doorkey && !playerNode.isStepping):
 		door_sfx.play()
 		var newroom = rooms[room_index].doors[doorkey].room_index
+		
+		uinode.toggle_player_highlight(room_index, false)
 		if(newroom != null):
 			room_index = newroom
 			load_room(room_index, door_translate[doorkey])
@@ -96,6 +98,8 @@ func _process(delta: float) -> void:
 			load_room(room_index, door_translate[doorkey])
 
 func load_room(index, side) -> void:
+	
+	uinode.toggle_player_highlight(index, true)
 	
 	var loading_room = rooms[index]
 	var tilestring
@@ -193,6 +197,7 @@ func map_room() -> void:
 	new_room_map_outside.set_color(linecolor)
 	
 	var new_room_map_inside = ColorRect.new()
+	new_room_map_inside.name = str("inner")
 	new_room_map_outside.add_child(new_room_map_inside)
 	new_room_map_inside.set_begin(Vector2(linewidth, linewidth))
 	new_room_map_inside.set_size(new_room_map_outside.get_size() - Vector2(linewidth*2, linewidth*2))
@@ -211,6 +216,8 @@ func map_room() -> void:
 		)
 		door_line.set_size(doormaplinesize[doorkey])
 		door_line.set_color(doorcolor if rooms[room_index].doors[doorkey].mapped else linecolor)
+	
+	uinode.toggle_player_highlight(room_index, true)
 
 var doormapoffset = {
 		"left": Vector2i(0,0),
