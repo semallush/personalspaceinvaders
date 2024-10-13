@@ -29,18 +29,19 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("mapping"):
 		show()
+		if(!world.rooms[world.room_index].mapped):
+			world.map_room()
 	if Input.is_action_just_released("mapping"):
 		hide()
 	if Input.is_action_pressed("mapping"):
 		for arrow in arrows:
 			if Input.is_action_just_pressed(arrow):
 				var door = world.rooms[world.room_index].doors[arrow]
-				print(door)
-				print(arrows[arrow])
 				door.mapped = !door.mapped
-				if(door.room_index):
+				if(door.room_index != null):
 					world.rooms[door.room_index].doors[door_translate[arrow]].mapped = door.mapped
 				updatearrows()
+				world.update_doors(arrow)
 
 func updatearrows() -> void:
 	var doors = world.rooms[world.room_index].doors
@@ -51,4 +52,3 @@ func updatearrows() -> void:
 		else:
 			arrows[arrow].get_child(1).show()
 			arrows[arrow].get_child(0).hide()
-#	also hide on the map somehow ahhh

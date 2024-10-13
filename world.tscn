@@ -1,11 +1,10 @@
-[gd_scene load_steps=50 format=4 uid="uid://b17gf0yb4000b"]
+[gd_scene load_steps=49 format=4 uid="uid://b17gf0yb4000b"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
 [ext_resource type="Texture2D" uid="uid://di7ggxk1qhur4" path="res://assets/tiles/room_tiles_012.png" id="2_rh4nk"]
 [ext_resource type="Texture2D" uid="uid://bx2y0trpk13cd" path="res://assets/tiles/room_tiles_011.png" id="2_wd2rs"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_y1o64"]
 [ext_resource type="Texture2D" uid="uid://dq1fwp8qit5j0" path="res://assets/lenin.png" id="5_puu8m"]
-[ext_resource type="Script" path="res://precinct.gd" id="6_71l8g"]
 [ext_resource type="Texture2D" uid="uid://bapp1m3ma6ukl" path="res://assets/ui/ui_background.png" id="8_ncwy0"]
 [ext_resource type="Script" path="res://scripts/mapper.gd" id="9_rmak1"]
 [ext_resource type="Texture2D" uid="uid://chljmd35qrmm3" path="res://assets/ui/ln1.png" id="10_4m582"]
@@ -260,74 +259,71 @@ shape = SubResource("RectangleShape2D_hb2i8")
 [node name="minimap" type="ColorRect" parent="."]
 offset_right = 96.0
 offset_bottom = 68.0
-color = Color(0, 0, 0, 0.380392)
+color = Color(0, 0, 0, 0)
 
 [node name="precinct" type="Node" parent="."]
-script = ExtResource("6_71l8g")
 
-[node name="UiBackground" type="Sprite2D" parent="."]
+[node name="ui" type="Sprite2D" parent="."]
 visible = false
 texture = ExtResource("8_ncwy0")
 centered = false
 script = ExtResource("9_rmak1")
 
-[node name="left" type="Node2D" parent="UiBackground"]
+[node name="left" type="Node2D" parent="ui"]
 position = Vector2(40, 127)
 
-[node name="yes" type="AnimatedSprite2D" parent="UiBackground/left"]
+[node name="yes" type="AnimatedSprite2D" parent="ui/left"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_3a4s0")
 centered = false
 
-[node name="no" type="AnimatedSprite2D" parent="UiBackground/left"]
+[node name="no" type="AnimatedSprite2D" parent="ui/left"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_u0yt0")
 centered = false
 
-[node name="right" type="Node2D" parent="UiBackground"]
+[node name="right" type="Node2D" parent="ui"]
 position = Vector2(235, 136)
 
-[node name="yes" type="AnimatedSprite2D" parent="UiBackground/right"]
+[node name="yes" type="AnimatedSprite2D" parent="ui/right"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_lnqva")
 centered = false
 
-[node name="no" type="AnimatedSprite2D" parent="UiBackground/right"]
+[node name="no" type="AnimatedSprite2D" parent="ui/right"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_gtgps")
 centered = false
 
-[node name="up" type="Node2D" parent="UiBackground"]
+[node name="up" type="Node2D" parent="ui"]
 position = Vector2(142, 60)
 
-[node name="yes" type="AnimatedSprite2D" parent="UiBackground/up"]
+[node name="yes" type="AnimatedSprite2D" parent="ui/up"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_jy8s7")
 centered = false
 
-[node name="no" type="AnimatedSprite2D" parent="UiBackground/up"]
+[node name="no" type="AnimatedSprite2D" parent="ui/up"]
 visible = false
 z_index = 127
 z_as_relative = false
 sprite_frames = SubResource("SpriteFrames_bwkok")
 centered = false
 
-[node name="down" type="Node2D" parent="UiBackground"]
+[node name="down" type="Node2D" parent="ui"]
 position = Vector2(135, 232)
 
-[node name="yes" type="AnimatedSprite2D" parent="UiBackground/down"]
+[node name="yes" type="AnimatedSprite2D" parent="ui/down"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_me08v")
 centered = false
 
-[node name="no" type="AnimatedSprite2D" parent="UiBackground/down"]
+[node name="no" type="AnimatedSprite2D" parent="ui/down"]
 visible = false
 sprite_frames = SubResource("SpriteFrames_8woe4")
 centered = false
 
-[node name="dots" type="AnimatedSprite2D" parent="UiBackground"]
+[node name="dots" type="AnimatedSprite2D" parent="ui"]
 position = Vector2(179, 186)
 sprite_frames = SubResource("SpriteFrames_106wr")
 centered = false
-
-[node name="Window" type="Window" parent="."]
