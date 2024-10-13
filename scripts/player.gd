@@ -12,12 +12,20 @@ var precinct = get_node("../precinct")
 @onready
 var bg_audio = get_node("../bg_audio")
 
+@onready
+var step_audio = get_node("../step_sfx")
+
+@onready
+var score_label = get_node("../score")
+
 var isStepping = false
 
 # pixels per frame
 var speed = 2
 var stepSize = 16
 var currentSubStep = 0
+
+var score = 0
 
 # 0:up, 1:right, 2:down, 3:left
 var stepDir = -1
@@ -71,6 +79,8 @@ func startStep(dir: int) -> void:
 			stepStart = Vector2i(position.x, position.y)
 			stepDir = dir
 			isStepping = true
+			step_audio.pitch_scale = randf_range(0.5,1.0)
+			step_audio.play()
 func updateStep() -> void:
 	if isStepping:
 		if currentSubStep < stepSize:
@@ -103,3 +113,7 @@ func nextTileWalkable(playerTile: Vector2i, dir: int) -> bool:
 				return false
 		return true
 				
+func increaseScore(amount: int) -> void:
+	score += amount
+	var scoreText = "credit score: " + str(score)
+	score_label.text = scoreText

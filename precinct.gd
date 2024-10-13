@@ -14,6 +14,8 @@ var playerNode = get_node("../lenin")
 @onready
 var halt_sfx = get_node("../halt_sfx")
 
+
+
 var pigs = []
 
 # keeps track of all pigs
@@ -22,6 +24,8 @@ var trackedPigs = []
 var haveSpawned = false
 
 var frames = 0
+
+var crossStar = null
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -40,8 +44,8 @@ func _process(delta: float) -> void:
 	if Input.is_action_just_released("pig"):
 		inventPig(1, worldNode.room_index)
 	
-	if randf() < 0.01:
-		halt_sfx.play()
+	#if randf() < 0.01:
+		#halt_sfx.play()
 	frames += 1
 	if (frames % 10 == 0):
 		updatePigPaths()
@@ -75,6 +79,7 @@ func spawnLocalPigs() -> void:
 			pig.receivePlayer(playerNode)
 			pig.receiveWorld(worldNode)
 			pig.receiveRoom(roomNode)
+
 			pig.position = tp[1]
 			pig.pigIndex = pigIndex
 			pigIndex += 1
@@ -86,3 +91,20 @@ func killPigs() -> void:
 		pig.queue_free()
 	pigs = []
 	haveSpawned = false
+
+func updateCrossStar(rooms: Array) -> void:
+	crossStar = AStar2D.new()
+	
+	for room in rooms:
+		crossStar.add_point(room.room_index, room.world_coord)
+		
+	for room in rooms:
+		if room.doors["left"].room_index != null:
+			crossStar.connect_points(room.room_index, room.doors["left"].room_index)
+		if room.doors["right"].room_index != null:
+			crossStar.connect_points(room.room_index, room.doors["right"].room_index)
+		if room.doors["up"].room_index != null:
+			crossStar.connect_points(room.room_index, room.doors["up"].room_index)
+		if room.doors["down"].room_index != null:
+			crossStar.connect_points(room.room_index, room.doors["down"].room_index)
+			

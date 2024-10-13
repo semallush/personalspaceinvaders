@@ -5,6 +5,7 @@ var height = 0
 var world_coord = Vector2i(0,0)
 var mapped = false
 var mapped_correctly = false
+var room_index = -1
 var doors  = {
 	"left": {
 		exists = false,
@@ -53,10 +54,10 @@ var door_door_offset = { #this is necessary because of how badly i fucked up the
 
 var floor_tile = Vector2i(randi_range(0,1),randi_range(0,1))
 
-func _init(start_index, start_side, door_coord, mapped, rooms) -> void:
+func _init(start_index, start_side, door_coord, mapped, rooms, index) -> void:
 	
-	check_convergence(start_side, door_coord, rooms)
-	
+	#check_convergence(start_side, door_coord, rooms)
+	room_index = index
 	width = randi_range(10,18)
 	width += width%2
 	height = randi_range(10,18)

@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://c26qhqxmpp3ce"]
+[gd_scene load_steps=5 format=3 uid="uid://c26qhqxmpp3ce"]
 
 [ext_resource type="Script" path="res://pig.gd" id="1_3o8s4"]
 [ext_resource type="Texture2D" uid="uid://bodior26v4o0e" path="res://assets/pig01.png" id="2_emc4j"]
+[ext_resource type="AudioStream" uid="uid://f38y73536aoq" path="res://assets/audio/step.mp3" id="3_mpth5"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hb2i8"]
 size = Vector2(20, 40)
@@ -19,3 +20,7 @@ texture = ExtResource("2_emc4j")
 visible = false
 position = Vector2(11, 19)
 shape = SubResource("RectangleShape2D_hb2i8")
+
+[node name="step_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_mpth5")
+volume_db = -3.048

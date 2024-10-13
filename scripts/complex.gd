@@ -21,7 +21,7 @@ var mapscale = 5
 var linewidth = 1
 
 var rooms = [
-	room.new(null, null, Vector2(0,0), false, [])
+	room.new(null, null, Vector2(0,0), false, [],0)
 ]
 var room_index = 0
 
@@ -78,21 +78,38 @@ func _process(delta: float) -> void:
 	var doorkey = door_coords.find_key(player_tile)
 	if(doorkey && !playerNode.isStepping):
 		door_sfx.play()
+		
+		# check if mapped correctly, then invent pigs
+		rooms[room_index].verify_mapping()
+		if (rooms[room_index].mapped_correctly):
+			var pigs_exist = false
+			for existing in precinctNode.trackedPigs:
+				if existing[0] == room_index:
+					pigs_exist = true
+					break
+			if !pigs_exist:
+				playerNode.increaseScore(100)
+				var count = randi_range(0,2)
+				precinctNode.inventPig(count, room_index)
+					 
 		var newroom = rooms[room_index].doors[doorkey].room_index
 		if(newroom != null):
 			room_index = newroom
 			load_room(room_index, door_translate[doorkey])
 		if(newroom == null):
+			
 			rooms.push_back(room.new(
 				room_index, 
 				door_translate[doorkey], 
 				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]),
 				rooms[room_index].doors[doorkey].mapped,
-				rooms
+				rooms,
+				rooms.size()-1
 			))
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
 			
+			precinctNode.updateCrossStar(rooms)
 			load_room(room_index, door_translate[doorkey])
 
 func load_room(index, side) -> void:

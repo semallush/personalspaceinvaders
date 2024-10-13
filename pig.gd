@@ -10,6 +10,10 @@ var astar_grid = AStarGrid2D.new()
 #
 ##@onready
 ##var playerNode = get_node("../lenin")
+@onready
+var step_audio = get_node("step_sfx")
+
+
 
 var roomNode = null
 var worldNode = null
@@ -51,7 +55,7 @@ func _process(delta):
 		var cells = roomNode.get_used_cells()
 		var room = worldNode.rooms[worldNode.room_index]
 		var walls = worldNode.walls
-		astar_grid.region = Rect2i(walls["left"]+1, walls["up"]+1, room.width-2, room.height-1)
+		astar_grid.region = Rect2i(walls["left"]+1, walls["up"]+3, room.width-2, room.height-3)
 		astar_grid.cell_size = Vector2(16, 16)
 		astar_grid.diagonal_mode = 1
 		astar_grid.update()
@@ -113,6 +117,15 @@ func _process(delta):
 								dirPossibilities[0] = false
 							if down == otherNext || down == otherTile:
 								dirPossibilities[2] = false
+								
+							if left.x < astar_grid.region.position.x:
+								dirPossibilities[3] = false
+							if right.x > astar_grid.region.position.x+astar_grid.region.size.x-1:
+								dirPossibilities[1] = false
+							if up.y < astar_grid.region.position.y:
+								dirPossibilities[0] = false
+							if down.y > astar_grid.region.position.y + astar_grid.region.size.y-1:
+								dirPossibilities[2] = false
 					
 					var dirs = []
 					if dirPossibilities[0]: dirs.append(0)
@@ -123,7 +136,7 @@ func _process(delta):
 					if randf()<0.05:
 						var di = randi_range(0,dirs.size()-1)
 						#print(dirs)
-						if (dirs.size()>0):
+						if (dirs.size()>0 && nextTile != perp):
 							startStep(dirs[di])
 					
 				
@@ -136,6 +149,11 @@ func startStep(dir: int) -> void:
 			stepDir = dir
 			isStepping = true
 			pathIndex += 1
+			print(step_audio)
+			if (step_audio != null):
+				print('hey')
+				step_audio.pitch_scale = randf_range(1.2,2.0)
+				step_audio.play()
 func updateStep() -> void:
 	if isStepping:
 		if currentSubStep < stepSize:
@@ -165,6 +183,7 @@ func receiveWorld(world: Node) -> void:
 	worldNode = world
 func receiveRoom(room: Node) -> void:
 	roomNode = room
+
 func updatePigs(p:Array) -> void:
 	
 	pigs = p

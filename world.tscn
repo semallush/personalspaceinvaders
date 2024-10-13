@@ -1,4 +1,4 @@
-[gd_scene load_steps=54 format=4 uid="uid://b17gf0yb4000b"]
+[gd_scene load_steps=57 format=4 uid="uid://b17gf0yb4000b"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
 [ext_resource type="Texture2D" uid="uid://di7ggxk1qhur4" path="res://assets/tiles/room_tiles_012.png" id="2_rh4nk"]
@@ -40,6 +40,7 @@
 [ext_resource type="Texture2D" uid="uid://ddt38vmt5374t" path="res://assets/ui/dots1.png" id="34_st1we"]
 [ext_resource type="Texture2D" uid="uid://bkj3urghtg12t" path="res://assets/ui/dots2.png" id="35_6larv"]
 [ext_resource type="Texture2D" uid="uid://dsjct42ut3ra2" path="res://assets/ui/dots3.png" id="36_gegs8"]
+[ext_resource type="AudioStream" uid="uid://f38y73536aoq" path="res://assets/audio/step.mp3" id="41_xetwr"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ga6im"]
 texture = ExtResource("2_rh4nk")
@@ -81,6 +82,18 @@ sources/2 = SubResource("TileSetAtlasSource_f3cox")
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_hb2i8"]
 size = Vector2(20, 40)
+
+[sub_resource type="SystemFont" id="SystemFont_gqugn"]
+font_weight = 650
+
+[sub_resource type="LabelSettings" id="LabelSettings_xrxp0"]
+font = SubResource("SystemFont_gqugn")
+font_size = 14
+font_color = Color(0.690196, 1, 0.745098, 1)
+outline_size = 3
+outline_color = Color(0, 1, 0, 1)
+shadow_size = 7
+shadow_color = Color(0, 0.329412, 0, 0.792157)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_3a4s0"]
 animations = [{
@@ -247,6 +260,8 @@ tile_map_data = PackedByteArray("AAABAAEAAAAAAAAAAAABAAIAAAAAAAAAAAABAAMAAAAAAAA
 tile_set = SubResource("TileSet_sohup")
 
 [node name="lenin" type="CharacterBody2D" parent="."]
+top_level = true
+z_index = 1
 position = Vector2(8, 24)
 script = ExtResource("2_y1o64")
 
@@ -269,8 +284,19 @@ color = Color(0, 0, 0, 0)
 [node name="precinct" type="Node" parent="."]
 script = ExtResource("6_71l8g")
 
+[node name="score" type="Label" parent="."]
+offset_left = 174.0
+offset_top = 3.0
+offset_right = 314.0
+offset_bottom = 35.0
+text = "credit score: 0"
+label_settings = SubResource("LabelSettings_xrxp0")
+horizontal_alignment = 2
+
 [node name="ui" type="Sprite2D" parent="."]
 visible = false
+top_level = true
+z_index = 2
 texture = ExtResource("8_ncwy0")
 centered = false
 script = ExtResource("9_rmak1")
@@ -339,7 +365,7 @@ stream = ExtResource("6_1yjx5")
 
 [node name="bg_audio" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("7_8e0i7")
-volume_db = -14.476
+volume_db = -18.666
 parameters/looping = true
 
 [node name="door_sfx" type="AudioStreamPlayer" parent="."]
@@ -348,4 +374,8 @@ volume_db = -3.048
 
 [node name="halt_sfx" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("9_le0yh")
+volume_db = -3.048
+
+[node name="step_sfx" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("41_xetwr")
 volume_db = -3.048
