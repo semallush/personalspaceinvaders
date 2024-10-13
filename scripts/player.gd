@@ -3,7 +3,8 @@ extends CharacterBody2D
 
 @onready
 var roomNode = get_node("../room")
-
+@onready
+var text = get_node("../RichTextLabel")
 #@onready
 #var pigNode = get_node("../pig")
 @onready
@@ -63,15 +64,19 @@ func _process(delta: float) -> void:
 	
 	if !Input.is_action_pressed("mapping"):
 		if Input.is_action_pressed("left"):
+			text.clear()
 			if nextTileWalkable(playerTile, 3):
 				startStep(3)
 		if Input.is_action_pressed("up"):
+			text.clear()
 			if nextTileWalkable(playerTile, 0):
 				startStep(0)
 		if Input.is_action_pressed("right"):
+			text.clear()
 			if nextTileWalkable(playerTile, 1):
 				startStep(1)
 		if Input.is_action_pressed("down"):
+			text.clear()
 			if nextTileWalkable(playerTile, 2):
 				startStep(2)
 	

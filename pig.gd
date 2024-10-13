@@ -180,9 +180,9 @@ func startStep(dir: int) -> void:
 			stepDir = dir
 			isStepping = true
 			pathIndex += 1
-			print(step_audio)
+		
 			if (step_audio != null):
-				print('hey')
+				
 				step_audio.pitch_scale = randf_range(1.2,2.0)
 				step_audio.play()
 func updateStep() -> void:

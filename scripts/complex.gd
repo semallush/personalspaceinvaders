@@ -30,6 +30,8 @@ var linecolor = Color(1,1,1)
 var doorcolor = Color(1,0,0)
 var highlight = Color(1,1,1,0.3)
 
+var wrongMaps = 0
+
 var default_doors = {
 		"left": Vector2i(0,0),
 		"right": Vector2i(0,0),
@@ -91,13 +93,14 @@ func _process(delta: float) -> void:
 			if !pigs_exist:
 				playerNode.increaseScore(100)
 				var count = randi_range(0,2)
-				#precinctNode.inventPig(count, room_index)
-				#if (count>0):
-					#pigs_exist = true
+				precinctNode.inventPig(count, room_index)
+				if (count>0):
+					pigs_exist = true
 			if pigs_exist:
 				
 				uinode.toggle_cop_highlight(room_index, true)
-					 
+		else:
+			wrongMaps+=1			 
 		var newroom = rooms[room_index].doors[doorkey].room_index
 		
 		#uinode.toggle_player_highlight(room_index, false)

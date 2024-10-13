@@ -1,4 +1,4 @@
-[gd_scene load_steps=61 format=4 uid="uid://b17gf0yb4000b"]
+[gd_scene load_steps=62 format=4 uid="uid://b17gf0yb4000b"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
 [ext_resource type="Texture2D" uid="uid://di7ggxk1qhur4" path="res://assets/tiles/room_tiles_012.png" id="2_rh4nk"]
@@ -45,6 +45,7 @@
 [ext_resource type="AudioStream" uid="uid://bfaw8a3amvavh" path="res://assets/audio/ui_open.mp3" id="43_l0pg2"]
 [ext_resource type="AudioStream" uid="uid://ddtsycybgpv8d" path="res://assets/audio/ui_close.mp3" id="44_1c7so"]
 [ext_resource type="AudioStream" uid="uid://brbm7ea8xrfxo" path="res://assets/audio/money.mp3" id="45_sdkqw"]
+[ext_resource type="AudioStream" uid="uid://bdobksy72dr37" path="res://assets/audio/forgot.mp3" id="46_6q16p"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ga6im"]
 texture = ExtResource("2_rh4nk")
@@ -399,3 +400,19 @@ volume_db = -12.191
 [node name="money_sfx" type="AudioStreamPlayer" parent="."]
 stream = ExtResource("45_sdkqw")
 volume_db = -2.23
+
+[node name="forgot" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("46_6q16p")
+volume_db = -2.23
+
+[node name="RichTextLabel" type="RichTextLabel" parent="."]
+offset_left = 25.0
+offset_top = 23.0
+offset_right = 302.0
+offset_bottom = 298.0
+text = "happy sunday, mapper!
+today you have been tasked with
+mapping another 10.000 living rooms. use [W], [A], [S], [D] to walk, and use  [W], [A], [S], [D] and [SPACE] to map. 
+thank you for helping grow our database.
+
+lockheed morris real estate solutions"
