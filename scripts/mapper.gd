@@ -32,7 +32,7 @@ func _ready() -> void:
 		arrows[arrow].get_child(0).play()
 		arrows[arrow].get_child(1).play()
 	get_child(4).play()
-	updatearrows()
+	#updatearrows()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

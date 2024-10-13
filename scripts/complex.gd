@@ -21,7 +21,6 @@ var mapscale = 5
 var linewidth = 1
 
 var rooms = [
-	room.new(null, null, Vector2(0,0), false, [],0)
 ]
 var room_index = 0
 
@@ -56,6 +55,29 @@ var walls = {
 	"down": 0,
 }
 
+var obstacle_paths = [
+	"bed01",
+	"bed02",
+	"chair01",
+	"plant01",
+	"sofa01"
+]
+var wall_ornament_paths = [
+	
+]
+var floor_ornament_paths = [
+	
+]
+
+var obstacles = []
+var wall_ornaments = []
+var floor_ornaments = []
+
+var obstacle_nodes = []
+var wall_ornament_nodes = []
+var floor_ornament_nodes = []
+
+
 var tiles = {
 	"floor": Vector2i(randi_range(0,1),randi_range(0,1)),
 	"wall_top": Vector2i(1,2),
@@ -72,6 +94,28 @@ var tiles = {
 var firstRoom = true
 
 func _ready() -> void:
+	for path in obstacle_paths:
+		var tex = load("res://assets/obstacles/"+path+".png")
+		obstacles.push_back({
+			"texture" = tex,
+			"obj_size" = Vector2i(ceil(tex.get_width()/16),ceil(tex.get_height()/16)),
+			"name" = path
+		})
+	for path in wall_ornament_paths:
+		var tex = load("res://assets/wall ornament/"+path+".png")
+		wall_ornaments.push_back({
+			"texture" = tex,
+			"obj_size" = Vector2i(ceil(tex.get_width()/16),ceil(tex.get_height()/16)),
+			"name" = path
+		})
+	for path in floor_ornament_paths:
+		var tex = load("res://assets/floor ornament/"+path+".png")
+		floor_ornaments.push_back({
+			"texture" = tex,
+			"obj_size" = Vector2i(ceil(tex.get_width()/16),ceil(tex.get_height()/16)),
+			"name" = path
+		})
+	rooms.push_back(room.new(null, null, Vector2(0,0), false, [],0,obstacles,wall_ornaments, floor_ornaments))
 	load_room(0,"left")
 
 func _process(delta: float) -> void:
@@ -112,7 +156,10 @@ func _process(delta: float) -> void:
 				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]),
 				rooms[room_index].doors[doorkey].mapped,
 				rooms,
-				rooms.size()
+				rooms.size(),
+				obstacles,
+				wall_ornaments,
+				floor_ornaments
 			))
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
@@ -123,6 +170,9 @@ func _process(delta: float) -> void:
 func load_room(index, side) -> void:
 	
 	#uinode.toggle_player_highlight(index, true)
+	for obstacle_node in obstacle_nodes:
+		obstacle_node.free()
+	obstacle_nodes = []
 	
 	var loading_room = rooms[index]
 	var tilestring
@@ -200,6 +250,19 @@ func load_room(index, side) -> void:
 				roomNode.set_cell(Vector2i(x, y), 0, loading_room.floor_tile)
 				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
+			
+	for obstacle in rooms[room_index].this_obstacles:
+		var obsnode = Sprite2D.new()
+		var texture
+		for obstacle_texture in obstacles:
+			if(obstacle_texture["name"] == obstacle["name"]):
+				texture = obstacle_texture["texture"]
+				print(texture)
+		obsnode.set_texture(texture)
+		obsnode.rotate(obstacle["rot"]*PI/2)
+		obsnode.translate(Vector2( (walls["left"]+obstacle["pos"].x)*16, (walls["up"]+obstacle["pos"].y)*16))
+		add_child(obsnode)
+		obstacle_nodes.push_back(obsnode)
 	precinctNode.killPigs()
 	
 	uinode.updatearrows()
@@ -263,8 +326,6 @@ var doormaplinesize = {
 }
 
 func update_doors(direction) -> void:
-	#if(!rooms[room_index].doors[direction].exists):
-	
 	get_node('minimap/'+str(room_index)+'/'+direction).set_color(
 		doorcolor if rooms[room_index].doors[direction].mapped else linecolor
 	)
@@ -274,4 +335,3 @@ func update_doors(direction) -> void:
 			get_node('minimap/'+str(other_index)+'/'+door_translate[direction]).set_color(
 				doorcolor if rooms[other_index].doors[door_translate[direction]].mapped else linecolor
 			)
-			
