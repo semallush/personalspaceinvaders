@@ -92,7 +92,7 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index, obstacles,
 			doors[door].room_index = start_index
 			doors[door].mapped = mapped
 		elif(doors[door].exists && doors[door].room_index != null):
-			print(rooms[doors[door].room_index].doors[door_translate[door]].mapped)
+			#print(rooms[doors[door].room_index].doors[door_translate[door]].mapped)
 			doors[door].mapped = rooms[doors[door].room_index].doors[door_translate[door]].mapped
 		else:
 			#check if theres some shit in the way????
@@ -113,13 +113,10 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index, obstacles,
 			doors[door].coord = randi_range(1,width-3)
 	
 	# add obstacles
-	#var filled_tiles = [];
-	var roomsize = Vector2i(width-2, height-3)
+	var roomsize = Vector2i(width-4, height-5)
 	var total_tiles = roomsize.x * roomsize.y
 	while(obstacle_tiles.size() / total_tiles < 0.25):
-		print('start')
-		if(randf()>0.99):
-			print('broke')
+		if(randf()>0.999):
 			break
 		var pos = Vector2i(randi_range(0,roomsize.x), randi_range(0,roomsize.y))
 		var obstacle = obstacles[randi_range(0,obstacles.size()-1)]
@@ -127,28 +124,55 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index, obstacles,
 		var obsize = obstacle["obj_size"]
 		var objectinvalid = false
 		if(rotate == 1 || rotate == 3):
-			obsize = Vector2i(obstacle["obj_size"].y,obstacle["obj_size"].x)
+			obsize = Vector2i(obsize.y,obsize.x)
 		for x in range(obsize.x):
 			for y in range(obsize.y):
-				if(x>roomsize.x || y>roomsize.y):
+				if(x+pos.x>roomsize.x || y+pos.y>roomsize.y):
 					objectinvalid = true
 					break
 				for tile in obstacle_tiles:
-					if(x==tile.x || y==tile.y):
+					if(x+pos.x==tile.x || y+pos.y==tile.y):
 						objectinvalid = true
 						break
 		if(!objectinvalid):
 			for x in range(obsize.x):
 				for y in range(obsize.y):
-					obstacle_tiles.push_back(Vector2i(x,y))
+					obstacle_tiles.push_back(Vector2i(x,y)+pos)
 			this_obstacles.push_back({
 				"pos" = pos,
 				"name" = obstacle.name,
 				"rot" = rotate
 			})
-		
 	print(this_obstacles)
-	print(obstacle_tiles)
+	
+	#add floor deco
+	var filled_tiles = [];
+	while(filled_tiles.size() / total_tiles < 0.25):
+		if(randf()>0.999):
+			break
+		var pos = Vector2i(randi_range(0,roomsize.x), randi_range(0,roomsize.y))
+		var floor_ornament = floor_ornaments[randi_range(0,floor_ornaments.size()-1)]
+		var rotate = randi_range(0,3)
+		var obsize = floor_ornament["obj_size"]
+		var objectinvalid = false
+		if(rotate == 1 || rotate == 3):
+			obsize = Vector2i(obsize.y,obsize.x)
+		for x in range(obsize.x):
+			for y in range(obsize.y):
+				if(x+pos.x>roomsize.x || y+pos.y>roomsize.y):
+					objectinvalid = true
+					break
+		if(!objectinvalid):
+			for x in range(obsize.x):
+				for y in range(obsize.y):
+					filled_tiles.push_back(Vector2i(x,y)+pos)
+			this_floor_ornament.push_back({
+				"pos" = pos,
+				"name" = floor_ornament.name,
+				"rot" = rotate
+			})
+		
+	#print(this_floor_ornament)
 
 func verify_mapping() -> void:
 	if(mapped):

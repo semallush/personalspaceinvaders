@@ -68,7 +68,7 @@ func updatearrows() -> void:
 			arrows[arrow].get_child(0).hide()
 
 func toggle_cop_highlight(room_index, on) -> void:
-	if(!get_node('../minimap/'+str(room_index)+'/cop')):return
+	if(!world.rooms[room_index].mapped):return
 	if(on): get_node('../minimap/'+str(room_index)+'/cop').set_color(Color(0,0,1))
 	if(!on): get_node('../minimap/'+str(room_index)+'/cop').set_color(Color(0,0,0))
 

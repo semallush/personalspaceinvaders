@@ -17,6 +17,9 @@ var uinode = get_node("ui")
 @onready
 var door_sfx = get_node("door_sfx")
 
+@onready
+var furniture_layer = get_node("furniture")
+
 var mapscale = 5
 var linewidth = 1
 
@@ -68,7 +71,8 @@ var wall_ornament_paths = [
 	
 ]
 var floor_ornament_paths = [
-	
+	"rug01",
+	"rug02"
 ]
 
 var obstacles = []
@@ -254,18 +258,31 @@ func load_room(index, side) -> void:
 				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
 			
+	for ornament in rooms[room_index].this_floor_ornament:
+		var obs_sprite = Sprite2D.new()
+		var texture
+		for ornament_texture in floor_ornaments:
+			if(ornament_texture["name"] == ornament["name"]):
+				texture = ornament_texture["texture"]
+		obs_sprite.set_texture(texture)
+		obs_sprite.rotate(ornament["rot"]*PI/2)
+		obs_sprite.set_centered(false)
+		obs_sprite.translate(Vector2( (walls["left"]+ornament["pos"].x+2)*16, (walls["up"]+ornament["pos"].y+4)*16))
+		furniture_layer.add_child(obs_sprite)
+		obstacle_nodes.push_back(obs_sprite)
 	for obstacle in rooms[room_index].this_obstacles:
-		var obsnode = Sprite2D.new()
+		var obs_sprite = Sprite2D.new()
 		var texture
 		for obstacle_texture in obstacles:
 			if(obstacle_texture["name"] == obstacle["name"]):
 				texture = obstacle_texture["texture"]
-				print(texture)
-		obsnode.set_texture(texture)
-		obsnode.rotate(obstacle["rot"]*PI/2)
-		obsnode.translate(Vector2( (walls["left"]+obstacle["pos"].x)*16, (walls["up"]+obstacle["pos"].y)*16))
-		add_child(obsnode)
-		obstacle_nodes.push_back(obsnode)
+		obs_sprite.set_texture(texture)
+		obs_sprite.rotate(obstacle["rot"]*PI/2)
+		obs_sprite.set_centered(false)
+		obs_sprite.translate(Vector2( (walls["left"]+obstacle["pos"].x+2)*16, (walls["up"]+obstacle["pos"].y+4)*16))
+		furniture_layer.add_child(obs_sprite)
+		obstacle_nodes.push_back(obs_sprite)
+		
 	precinctNode.killPigs()
 	
 	uinode.updatearrows()
