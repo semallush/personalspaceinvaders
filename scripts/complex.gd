@@ -28,6 +28,7 @@ var room_index = 0
 var emptycolor = Color(0,0,0)
 var linecolor = Color(1,1,1)
 var doorcolor = Color(1,0,0)
+var highlight = Color(1,1,1,0.3)
 
 var default_doors = {
 		"left": Vector2i(0,0),
@@ -219,11 +220,18 @@ func map_room() -> void:
 	new_room_map_outside.set_color(linecolor)
 	
 	var new_room_map_inside = ColorRect.new()
-	new_room_map_inside.name = str("inner")
+	new_room_map_inside.name = str("cop")
 	new_room_map_outside.add_child(new_room_map_inside)
 	new_room_map_inside.set_begin(Vector2(linewidth, linewidth))
 	new_room_map_inside.set_size(new_room_map_outside.get_size() - Vector2(linewidth*2, linewidth*2))
 	new_room_map_inside.set_color(emptycolor)
+	
+	var new_room_map_highlight = ColorRect.new()
+	new_room_map_highlight.name = str("player")
+	new_room_map_outside.add_child(new_room_map_highlight)
+	new_room_map_highlight.set_begin(Vector2(linewidth, linewidth))
+	new_room_map_highlight.set_size(new_room_map_outside.get_size() - Vector2(linewidth*2, linewidth*2))
+	new_room_map_highlight.set_color(highlight)
 	
 	for doorkey in rooms[room_index].doors:
 		var door = rooms[room_index].doors[doorkey]
