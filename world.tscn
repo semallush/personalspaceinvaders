@@ -1,7 +1,6 @@
-[gd_scene load_steps=51 format=4 uid="uid://b17gf0yb4000b"]
+[gd_scene load_steps=50 format=4 uid="uid://b17gf0yb4000b"]
 
 [ext_resource type="Script" path="res://scripts/complex.gd" id="1_xbnb4"]
-[ext_resource type="Texture2D" uid="uid://bodior26v4o0e" path="res://assets/pig01.png" id="2_jo84j"]
 [ext_resource type="Texture2D" uid="uid://di7ggxk1qhur4" path="res://assets/tiles/room_tiles_012.png" id="2_rh4nk"]
 [ext_resource type="Texture2D" uid="uid://bx2y0trpk13cd" path="res://assets/tiles/room_tiles_011.png" id="2_wd2rs"]
 [ext_resource type="Script" path="res://scripts/player.gd" id="2_y1o64"]
@@ -263,6 +262,9 @@ offset_right = 96.0
 offset_bottom = 68.0
 color = Color(0, 0, 0, 0.380392)
 
+[node name="precinct" type="Node" parent="."]
+script = ExtResource("6_71l8g")
+
 [node name="UiBackground" type="Sprite2D" parent="."]
 visible = false
 texture = ExtResource("8_ncwy0")
@@ -305,6 +307,8 @@ centered = false
 
 [node name="no" type="AnimatedSprite2D" parent="UiBackground/up"]
 visible = false
+z_index = 127
+z_as_relative = false
 sprite_frames = SubResource("SpriteFrames_bwkok")
 centered = false
 
@@ -326,5 +330,4 @@ position = Vector2(179, 186)
 sprite_frames = SubResource("SpriteFrames_106wr")
 centered = false
 
-[node name="precinct" type="Node" parent="."]
-script = ExtResource("6_71l8g")
+[node name="Window" type="Window" parent="."]
