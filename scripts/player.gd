@@ -48,19 +48,19 @@ func _process(delta: float) -> void:
 	
 	playerTile = Vector2i(floor((position.x)/16), floor((position.y)/16))
 	
-	if Input.is_action_pressed("left"):
-		if nextTileWalkable(playerTile, 3):
-			startStep(3)
-	if Input.is_action_pressed("up"):
-		if nextTileWalkable(playerTile, 0):
-			startStep(0)
-	if Input.is_action_pressed("right"):
-		if nextTileWalkable(playerTile, 1):
-			startStep(1)
-	if Input.is_action_pressed("down"):
-		if nextTileWalkable(playerTile, 2):
-			startStep(2)
-			
+	if !Input.is_action_pressed("mapping"):
+		if Input.is_action_pressed("left"):
+			if nextTileWalkable(playerTile, 3):
+				startStep(3)
+		if Input.is_action_pressed("up"):
+			if nextTileWalkable(playerTile, 0):
+				startStep(0)
+		if Input.is_action_pressed("right"):
+			if nextTileWalkable(playerTile, 1):
+				startStep(1)
+		if Input.is_action_pressed("down"):
+			if nextTileWalkable(playerTile, 2):
+				startStep(2)
 	
 	
 func startStep(dir: int) -> void:

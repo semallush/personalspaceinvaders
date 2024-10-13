@@ -3,6 +3,7 @@ extends Object
 var width = 0
 var height = 0
 var world_coord = Vector2i(0,0)
+var mapped = false
 var doors  = {
 	"left": {
 		exists = false,
@@ -51,7 +52,7 @@ var door_door_offset = { #this is necessary because of how badly i fucked up the
 
 var floor_tile = Vector2i(randi_range(0,1),randi_range(0,1))
 
-func _init(start_index, start_side, door_coord) -> void:
+func _init(start_index, start_side, door_coord, mapped) -> void:
 	width = randi_range(10,18)
 	width += width%2
 	height = randi_range(10,18)
@@ -60,11 +61,13 @@ func _init(start_index, start_side, door_coord) -> void:
 		if(door == start_side):
 			doors[door].exists = true;
 			doors[door].room_index = start_index;
+			doors[door].mapped = mapped
 		else:
 			doors[door].exists = randf() < 0.5
-		if(doors[door].exists && (door == "left" || door == "right")):
+			
+		if(door == "left" || door == "right"):
 			doors[door].coord = randi_range(1,height-5)
-		if(doors[door].exists && (door == "up" || door == "down")):
+		if(door == "up" || door == "down"):
 			doors[door].coord = randi_range(1,width-3)
 	
 	if(start_side):

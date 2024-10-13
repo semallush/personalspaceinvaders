@@ -7,6 +7,8 @@ var roomNode = get_node("room")
 var playerNode = get_node("lenin")
 @onready
 var minimap = get_node("minimap")
+@onready
+var uinode = get_node("ui")
 
 @onready
 var door_sfx = get_node("door_sfx")
@@ -15,9 +17,13 @@ var mapscale = 5
 var linewidth = 1
 
 var rooms = [
-	room.new(null, null, Vector2(0,0))
+	room.new(null, null, Vector2(0,0), false)
 ]
 var room_index = 0
+
+var emptycolor = Color(0,0,0)
+var linecolor = Color(1,1,1)
+var doorcolor = Color(1,0,0)
 
 var default_doors = {
 		"left": Vector2i(0,0),
@@ -61,7 +67,6 @@ var tiles = {
 var firstRoom = true
 
 func _ready() -> void:
-	map_room(room_index)
 	load_room(0,"left")
 
 func _process(delta: float) -> void:
@@ -77,12 +82,11 @@ func _process(delta: float) -> void:
 			rooms.push_back(room.new(
 				room_index, 
 				door_translate[doorkey], 
-				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]))
-				)
+				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]),
+				rooms[room_index].doors[doorkey].mapped
+			))
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
-			
-			map_room(room_index)
 			
 			load_room(room_index, door_translate[doorkey])
 
@@ -98,6 +102,7 @@ func load_room(index, side) -> void:
 	
 	roomNode.clear()
 	var writtenTiles = []
+	door_coords = default_doors
 	if(loading_room.doors["left"].exists):
 		var coord = Vector2i(walls["left"], walls["up"] + loading_room.doors["left"].coord)
 		roomNode.set_cell( coord, 0, tiles["door_left"])
@@ -162,37 +167,43 @@ func load_room(index, side) -> void:
 				roomNode.set_cell(Vector2i(x, y), 0, loading_room.floor_tile)
 				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
+	
+	uinode.updatearrows()
 
-func map_room(room_index) -> void:
+func map_room() -> void:
+	rooms[room_index].mapped = true
 	
 	var roomsize = Vector2(rooms[room_index].width-2, rooms[room_index].height-2)
 	var roomcoord = rooms[room_index].world_coord
 	
 	var new_room_map_outside = ColorRect.new()
+	new_room_map_outside.name = str(room_index)
 	minimap.add_child(new_room_map_outside)
 	new_room_map_outside.set_begin(
 		minimap.get_size()/2 + Vector2(roomcoord)
 	)
 	new_room_map_outside.set_size(roomsize)
+	new_room_map_outside.set_color(linecolor)
 	
 	var new_room_map_inside = ColorRect.new()
 	new_room_map_outside.add_child(new_room_map_inside)
 	new_room_map_inside.set_begin(Vector2(linewidth, linewidth))
 	new_room_map_inside.set_size(new_room_map_outside.get_size() - Vector2(linewidth*2, linewidth*2))
-	new_room_map_inside.set_color(Color(0,0,0))
+	new_room_map_inside.set_color(emptycolor)
 	
 	for doorkey in rooms[room_index].doors:
 		var door = rooms[room_index].doors[doorkey]
-		if(door.exists):
-			var door_line = ColorRect.new()
-			new_room_map_outside.add_child(door_line)
-			door_line.set_begin(Vector2i(
-				door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x if (doorkey=="right") else 0, 
-				door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y if (doorkey=="down") else 0)
-				+ doormapoffset[doorkey]
-			)
-			door_line.set_size(doormaplinesize[doorkey])
-			door_line.set_color(Color(1,0,0))
+		
+		var door_line = ColorRect.new()
+		door_line.name = doorkey
+		new_room_map_outside.add_child(door_line)
+		door_line.set_begin(Vector2i(
+			door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x if (doorkey=="right") else 0, 
+			door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y if (doorkey=="down") else 0)
+			+ doormapoffset[doorkey]
+		)
+		door_line.set_size(doormaplinesize[doorkey])
+		door_line.set_color(doorcolor if rooms[room_index].doors[doorkey].mapped else linecolor)
 
 var doormapoffset = {
 		"left": Vector2i(0,0),
@@ -206,3 +217,17 @@ var doormaplinesize = {
 		"up": Vector2i(2,1),
 		"down": Vector2i(2,1)
 }
+
+func update_doors(direction) -> void:
+	#if(!rooms[room_index].doors[direction].exists):
+	
+	get_node('minimap/'+str(room_index)+'/'+direction).set_color(
+		doorcolor if rooms[room_index].doors[direction].mapped else linecolor
+	)
+	var other_index = rooms[room_index].doors[direction].room_index
+	if(other_index):
+		if(rooms[other_index].mapped):
+			get_node('minimap/'+str(other_index)+'/'+door_translate[direction]).set_color(
+				doorcolor if rooms[other_index].doors[door_translate[direction]].mapped else linecolor
+			)
+			
