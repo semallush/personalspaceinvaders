@@ -9,6 +9,9 @@ var roomNode = get_node("../room")
 @onready
 var precinct = get_node("../precinct")
 
+@onready
+var bg_audio = get_node("../bg_audio")
+
 var isStepping = false
 
 # pixels per frame
@@ -36,7 +39,7 @@ var collisionTiles = {
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
-
+	bg_audio.play()
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
@@ -57,6 +60,7 @@ func _process(delta: float) -> void:
 	if Input.is_action_pressed("down"):
 		if nextTileWalkable(playerTile, 2):
 			startStep(2)
+			
 	
 	
 func startStep(dir: int) -> void:

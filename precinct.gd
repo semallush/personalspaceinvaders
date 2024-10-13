@@ -14,6 +14,9 @@ var worldNode = get_parent()
 @onready
 var playerNode = get_node("../lenin")
 
+@onready
+var halt_sfx = get_node("../halt_sfx")
+
 var pigs = []
 var pigAmount = 5
 
@@ -43,6 +46,9 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
+	
+	if randf() < 0.01:
+		halt_sfx.play()
 	frames += 1
 	if (frames % 10 == 0):
 		updatePigPaths()

@@ -8,6 +8,9 @@ var playerNode = get_node("lenin")
 @onready
 var minimap = get_node("minimap")
 
+@onready
+var door_sfx = get_node("door_sfx")
+
 var mapscale = 5
 var linewidth = 1
 
@@ -65,6 +68,7 @@ func _process(delta: float) -> void:
 	var player_tile = Vector2i(floor((playerNode.position.x)/16), floor((playerNode.position.y)/16))
 	var doorkey = door_coords.find_key(player_tile)
 	if(doorkey && !playerNode.isStepping):
+		door_sfx.play()
 		var newroom = rooms[room_index].doors[doorkey].room_index
 		if(newroom != null):
 			room_index = newroom
