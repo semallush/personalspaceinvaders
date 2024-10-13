@@ -1,9 +1,6 @@
 extends Node
 
 var pig_scene = preload("res://scenes/pig_template.tscn")
-var test_pig = null
-var test_pig1 = null
-var test_pig2 = null
 
 @onready
 var roomNode = get_node("../room")
@@ -18,7 +15,9 @@ var playerNode = get_node("../lenin")
 var halt_sfx = get_node("../halt_sfx")
 
 var pigs = []
-var pigAmount = 5
+
+# keeps track of all pigs
+var trackedPigs = []
 
 var haveSpawned = false
 
@@ -27,17 +26,8 @@ var frames = 0
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	
-	var pigIndex = 0
-	
-	for i in range(pigAmount):
-		var pig = pig_scene.instantiate()
-		add_child(pig)
-		pig.receivePlayer(playerNode)
-		pig.receiveWorld(worldNode)
-		pig.receiveRoom(roomNode)
-		pig.pigIndex = pigIndex
-		pigIndex += 1
-		pigs.append(pig)
+	pass
+		
 		
 		
 	
@@ -47,6 +37,9 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	
+	if Input.is_action_just_released("pig"):
+		inventPig(1, worldNode.room_index)
+	
 	if randf() < 0.01:
 		halt_sfx.play()
 	frames += 1
@@ -54,15 +47,7 @@ func _process(delta: float) -> void:
 		updatePigPaths()
 	updatePigsPigs()
 	if !haveSpawned:
-		
-		var room = worldNode.rooms[worldNode.room_index]
-		var walls = worldNode.walls
-		for pig in pigs:
-			var x = randi_range(walls["left"]+1, walls["left"]+room.width-3)
-			var y = randi_range(walls["up"]+3, walls["up"]+room.height-3)
-			
-			pig.position = Vector2i(x*16,y*16)
-		
+		spawnLocalPigs()
 		haveSpawned = true
 
 func updatePigPaths() -> void:
@@ -71,3 +56,33 @@ func updatePigPaths() -> void:
 func updatePigsPigs() -> void:
 	for pig in pigs:
 		pig.updatePigs(pigs)
+		
+func inventPig(count: int, room_index: int) -> void:
+	var room = worldNode.rooms[room_index]
+	var walls = worldNode.walls
+	for i in range(count):
+		var x = randi_range(walls["left"]+1, walls["left"]+room.width-3)
+		var y = randi_range(walls["up"]+3, walls["up"]+room.height-3)
+		trackedPigs.append([worldNode.room_index, Vector2i(x*16+8,y*16-8)])
+		
+func spawnLocalPigs() -> void:
+	var pigIndex = 0
+	var walls = worldNode.walls
+	for tp in trackedPigs:
+		if tp[0] == worldNode.room_index:
+			var pig = pig_scene.instantiate()
+			add_child(pig)
+			pig.receivePlayer(playerNode)
+			pig.receiveWorld(worldNode)
+			pig.receiveRoom(roomNode)
+			pig.position = tp[1]
+			pig.pigIndex = pigIndex
+			pigIndex += 1
+			pigs.append(pig)
+	
+			
+func killPigs() -> void:
+	for pig in pigs:
+		pig.queue_free()
+	pigs = []
+	haveSpawned = false

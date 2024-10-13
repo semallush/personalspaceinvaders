@@ -7,12 +7,12 @@
 size = Vector2(20, 40)
 
 [node name="pig" type="CharacterBody2D"]
-position = Vector2(137, 170)
+position = Vector2(8, 25)
 script = ExtResource("1_3o8s4")
 
 [node name="Pig01" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(11, 19)
+position = Vector2(0, -9)
 texture = ExtResource("2_emc4j")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

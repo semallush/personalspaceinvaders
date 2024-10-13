@@ -5,6 +5,10 @@ var room = load("res://scripts/room.gd")
 var roomNode = get_node("room")
 @onready
 var playerNode = get_node("lenin")
+
+@onready
+var precinctNode = get_node("precinct")
+
 @onready
 var minimap = get_node("minimap")
 @onready
@@ -91,6 +95,7 @@ func _process(delta: float) -> void:
 			load_room(room_index, door_translate[doorkey])
 
 func load_room(index, side) -> void:
+	
 	var loading_room = rooms[index]
 	var tilestring
 	walls = {
@@ -141,7 +146,7 @@ func load_room(index, side) -> void:
 	
 	if(!firstRoom):
 		var portal_to_pos = (door_coords[side] + door_place_player[side])*16
-		playerNode.position = Vector2(portal_to_pos.x+8, portal_to_pos.y)
+		playerNode.position = Vector2(portal_to_pos.x+8, portal_to_pos.y+8)
 	firstRoom = false
 	
 	for x in range(20):
@@ -167,6 +172,7 @@ func load_room(index, side) -> void:
 				roomNode.set_cell(Vector2i(x, y), 0, loading_room.floor_tile)
 				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
+	precinctNode.killPigs()
 	
 	uinode.updatearrows()
 

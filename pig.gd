@@ -51,7 +51,7 @@ func _process(delta):
 		var cells = roomNode.get_used_cells()
 		var room = worldNode.rooms[worldNode.room_index]
 		var walls = worldNode.walls
-		astar_grid.region = Rect2i(walls["left"], walls["up"]+3, room.width-2, room.height-3)
+		astar_grid.region = Rect2i(walls["left"]+1, walls["up"]+1, room.width-2, room.height-1)
 		astar_grid.cell_size = Vector2(16, 16)
 		astar_grid.diagonal_mode = 1
 		astar_grid.update()
@@ -72,7 +72,8 @@ func _process(delta):
 						if nextTile == otherTile || nextTile == otherNext:
 							tileTaken = true
 							break
-				
+				if (nextTile == perp):
+					tileTaken = true
 				var dir = 0
 
 				if nextTile.y < pigTile.y:
@@ -154,9 +155,9 @@ func updateStep() -> void:
 				
 				
 func updatePath() -> void:
-
-	path = astar_grid.get_id_path(pigTile, perp, true)
-	pathIndex = 0
+	if (perp):
+		path = astar_grid.get_id_path(pigTile, perp, true)
+		pathIndex = 0
 	#print(path)
 func receivePlayer(player: Node) -> void:
 	playerNode = player

@@ -40,6 +40,8 @@ var collisionTiles = {
 func _ready() -> void:
 	pass
 	bg_audio.play()
+	
+	position = Vector2i(168,152)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:

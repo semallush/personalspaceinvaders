@@ -247,7 +247,7 @@ tile_map_data = PackedByteArray("AAABAAEAAAAAAAAAAAABAAIAAAAAAAAAAAABAAMAAAAAAAA
 tile_set = SubResource("TileSet_sohup")
 
 [node name="lenin" type="CharacterBody2D" parent="."]
-position = Vector2(152.63, 133.215)
+position = Vector2(8, 24)
 script = ExtResource("2_y1o64")
 
 [node name="Pig01" type="Sprite2D" parent="lenin"]
