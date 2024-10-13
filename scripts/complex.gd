@@ -17,7 +17,7 @@ var mapscale = 5
 var linewidth = 1
 
 var rooms = [
-	room.new(null, null, Vector2(0,0), false)
+	room.new(null, null, Vector2(0,0), false, [])
 ]
 var room_index = 0
 
@@ -83,7 +83,8 @@ func _process(delta: float) -> void:
 				room_index, 
 				door_translate[doorkey], 
 				rooms[room_index].world_coord + door_coords[doorkey] - Vector2i(walls["left"],walls["up"]),
-				rooms[room_index].doors[doorkey].mapped
+				rooms[room_index].doors[doorkey].mapped,
+				rooms
 			))
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
