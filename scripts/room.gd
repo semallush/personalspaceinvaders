@@ -63,22 +63,22 @@ var floor_tile = Vector2i(randi_range(0,1),randi_range(0,1))
 
 func _init(start_index, start_side, door_coord, mapped, rooms, index, obstacles, wall_ornaments, floor_ornaments) -> void:
 	
-	print('door', door_coord)
+	#print('door', door_coord)
 	
 	room_index = index
-	if(start_side):
-		check_convergence(start_side, door_coord, rooms)
-	if(width == 0):
-		width = randi_range(max(6,doors["up"].coord, doors["down"].coord),18)
-	width += width%2
-	width = max(width,6)
-	if(height == 0):
-		height = randi_range(max(6,doors["left"].coord, doors["right"].coord),16)
-	height += height%2
-	height = max(height,6)
 	
-	print('size ', width, ", ", height)
+	width = randi_range(6,18)
+	height = randi_range(6,16)
+	
+	if(start_side):
+		doors[start_side].coord = randi_range(0,height if (start_side=="left"||start_side=="right") else width)
+		map_offset = rooms[start_index].map_offset + door_door_offset[start_side]
+		check_convergence(start_side, door_coord, rooms)
+	
+	#print('size ', width, ", ", height)
 		
+	#this is for checking where a door should be impossible bc it goes into another room.
+	#i think its probably more efficient to do this in the previous bit
 	var check_rooms_direction = {
 		"left"=	Vector2i(-1, floor(height/2)),
 		"right"=Vector2i(width+1,floor(height/2)),
@@ -91,6 +91,7 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index, obstacles,
 			doors[door].exists = true
 			doors[door].room_index = start_index
 			doors[door].mapped = mapped
+			continue
 		elif(doors[door].exists && doors[door].room_index != null):
 			#print(rooms[doors[door].room_index].doors[door_translate[door]].mapped)
 			doors[door].mapped = rooms[doors[door].room_index].doors[door_translate[door]].mapped
@@ -105,23 +106,14 @@ func _init(start_index, start_side, door_coord, mapped, rooms, index, obstacles,
 			doors[door].exists = randf() < 0.75
 			
 		if(doors[door].coord != 0): 
-			if(door=="left" || door=="right" ): doors[door].coord = min(doors[door].coord, height-5)
+			# skip doors that are already mapped in check_convergence
+			#if(door=="left" || door=="right" ): doors[door].coord = min(doors[door].coord, height-5)
 			continue
 		if(door == "left" || door == "right"):
 			doors[door].coord = randi_range(0,height-1)
 		if(door == "up" || door == "down"):
 			doors[door].coord = randi_range(0,width-1)
-	
-	if(start_side):
-		map_offset = rooms[start_index].map_offset + door_door_offset[start_side]
-		world_coord = (door_coord 
-			+ door_size_shift[start_side] * Vector2i(width, height)
-			+ door_door_shift[start_side] * Vector2i(doors[start_side].coord,doors[start_side].coord)
-		)
 		
-	if(start_side):
-		print('doorstart coord, ', doors[start_side].coord)
-	
 	# add obstacles
 	var roomsize = Vector2i(width, height)
 	var total_tiles = roomsize.x * roomsize.y
@@ -192,31 +184,83 @@ func verify_mapping() -> void:
 				return
 		mapped_correctly = true
 
-func check_convergence(start_side, door_coord, rooms) -> void:
-	pass
 
-var door_options = {
-	"left"={
-		"right" = Vector4i(0,-1,1,1),
-		"up" = 	  Vector4i(0,-1,1,0),
-		"down" =  Vector4i(0,0,1,1), 
-	},
-	"right"={
-		"left" =  Vector4i(-1,-1,0,1),
-		"up" = 	  Vector4i(-1,-1,0,0),
-		"down" =  Vector4i(-1,0,0,1), 
-	},
-	"up"={
-		"left" =  Vector4i(-1,0,0,1),
-		"right" = Vector4i(0,0,1,1),
-		"down" =  Vector4i(-1,0,1,1), 
-	},
-	"down"={
-		"left" =  Vector4i(-1,-1,0,0),
-		"right" = Vector4i(0,-1,1,0),
-		"up" = 	  Vector4i(-1,-1,1,0), 
-	},
-}
+
+func check_convergence(start_side, door_coord, rooms) -> void:
+	
+	world_coord = (door_coord 
+		+ door_size_shift[start_side] * Vector2i(width, height)
+		+ door_door_shift[start_side] * Vector2i(doors[start_side].coord,doors[start_side].coord)
+	)
+	
+	print('before crop', world_coord, doors[start_side].coord, '  width:',width,' height:',height)
+
+	var bb1 = {	x0 = world_coord.x, 
+				y0 = world_coord.y,
+				x1 = world_coord.x + width,
+				y1 = world_coord.y + height} #bounding box
+	
+	#epic room chopping math
+	for room in rooms:
+		var bb2 = {	x0 = room.world_coord.x, 
+					y0 = room.world_coord.y,
+					x1 = room.world_coord.x + room.width,
+					y1 = room.world_coord.y + room.height}
+		
+		#extremely elegant intersection check
+		if !(bb2.x0<bb1.x1 && bb2.x1>bb1.x0 && bb2.y0<bb1.y1 && bb2.y1>bb1.y0):
+			continue
+		
+		print('found intersection')
+		
+		#cropping
+		var culling = {x = 0, y = 0}
+		if(door_coord.x < bb2.x0):
+			bb1.x1 = min(bb1.x1, bb2.x0)
+			culling.x= bb1.x1-bb1.x0
+		if(door_coord.x > bb2.x1):
+			bb1.x0 = max(bb1.x0, bb2.x1)
+			culling.x= bb1.x1-bb1.x0
+		if(door_coord.y < bb2.y0):
+			bb1.y1 = min(bb1.y1, bb2.y0)
+			culling.y= bb1.y1-bb1.y0
+		if(door_coord.y > bb2.y1):
+			bb1.y0 = max(bb1.y0, bb2.y1)
+			culling.y= bb1.y1-bb1.y0
+		
+		if(culling.x && culling.y):
+			pass #do area calcs
+	
+	world_coord = Vector2i(bb1.x0,bb1.y0)
+	width = bb1.x1-bb1.x0
+	height = bb1.y1-bb1.y0
+	doors[start_side].coord = (door_coord.x - world_coord.x ) if (start_side=="up"||start_side=="down") else (door_coord.y - world_coord.y )
+	
+	print('after crop', world_coord, doors[start_side].coord, '  width:',width,' height:',height)
+	
+
+#var door_options = {
+	#"left"={
+		#"right" = Vector4i(0,-1,1,1),
+		#"up" = 	  Vector4i(0,-1,1,0),
+		#"down" =  Vector4i(0,0,1,1), 
+	#},
+	#"right"={
+		#"left" =  Vector4i(-1,-1,0,1),
+		#"up" = 	  Vector4i(-1,-1,0,0),
+		#"down" =  Vector4i(-1,0,0,1), 
+	#},
+	#"up"={
+		#"left" =  Vector4i(-1,0,0,1),
+		#"right" = Vector4i(0,0,1,1),
+		#"down" =  Vector4i(-1,0,1,1), 
+	#},
+	#"down"={
+		#"left" =  Vector4i(-1,-1,0,0),
+		#"right" = Vector4i(0,-1,1,0),
+		#"up" = 	  Vector4i(-1,-1,1,0), 
+	#},
+#}
 
 var door_translate = {
 		"left": "right",

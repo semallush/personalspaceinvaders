@@ -172,10 +172,10 @@ func _process(delta: float) -> void:
 				wall_ornaments,
 				floor_ornaments
 			))
-			print('old coord:', rooms[room_index].world_coord)
+			#print('old coord:', rooms[room_index].world_coord)
 			rooms[room_index].doors[doorkey].room_index = rooms.size()-1
 			room_index = rooms.size()-1
-			print('new coord:', rooms[room_index].world_coord)
+			#print('new coord:', rooms[room_index].world_coord)
 			
 			precinctNode.updateCrossStar(rooms)
 			load_room(room_index, door_translate[doorkey])
@@ -304,10 +304,19 @@ func map_room() -> void:
 	var new_room_map_outside = ColorRect.new()
 	new_room_map_outside.name = str(room_index)
 	minimap.add_child(new_room_map_outside)
+	
+	## this is the cool version where rooms overlap a bit but its too confusing and i think probably also buggy
+	#new_room_map_outside.set_begin(
+		#minimap.get_size()/2 + Vector2(roomcoord) + Vector2(-1,-1) + Vector2(rooms[room_index].map_offset)
+	#)
+	#new_room_map_outside.set_size(roomsize + Vector2(2,2))
+	
+	## boring no overlap version
 	new_room_map_outside.set_begin(
-		minimap.get_size()/2 + Vector2(roomcoord) + Vector2(-1,-1) + Vector2(rooms[room_index].map_offset)
+		minimap.get_size()/2 + Vector2(roomcoord)
 	)
-	new_room_map_outside.set_size(roomsize + Vector2(2,2))
+	new_room_map_outside.set_size(roomsize)
+	
 	new_room_map_outside.set_color(linecolor)
 	
 	var new_room_map_inside = ColorRect.new()
@@ -331,10 +340,12 @@ func map_room() -> void:
 		door_line.name = doorkey
 		new_room_map_outside.add_child(door_line)
 		door_line.set_begin(Vector2i(
-			door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x + 1 if (doorkey=="right") else 0, 
-			door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y  + 1 if (doorkey=="down") else 0)
+			door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x - 1 if (doorkey=="right") else 0, 
+			door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y - 1 if (doorkey=="down") else 0)
 		)
 		door_line.set_size(doormaplinesize[doorkey])
+		if(door.coord == (roomsize.x if (doorkey=="up"||doorkey=="down") else roomsize.y) - 1):
+			door_line.set_size(Vector2(1,1))
 		door_line.set_color(doorcolor if rooms[room_index].doors[doorkey].mapped else linecolor)
 	
 	uinode.toggle_player_highlight(room_index, true)
