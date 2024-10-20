@@ -104,21 +104,21 @@ func _ready() -> void:
 		var tex = load("res://assets/obstacles/"+path+".png")
 		obstacles.push_back({
 			"texture" = tex,
-			"obj_size" = Vector2i(ceil(tex.get_width()/16),ceil(tex.get_height()/16)),
+			"obj_size" = Vector2i(ceil(tex.get_width()/16.0),ceil(tex.get_height()/16.0)),
 			"name" = path
 		})
 	for path in wall_ornament_paths:
 		var tex = load("res://assets/wall ornament/"+path+".png")
 		wall_ornaments.push_back({
 			"texture" = tex,
-			"obj_size" = Vector2i(ceil(tex.get_width()/16),ceil(tex.get_height()/16)),
+			"obj_size" = Vector2i(ceil(tex.get_width()/16.0),ceil(tex.get_height()/16.0)),
 			"name" = path
 		})
 	for path in floor_ornament_paths:
 		var tex = load("res://assets/floor ornament/"+path+".png")
 		floor_ornaments.push_back({
 			"texture" = tex,
-			"obj_size" = Vector2i(ceil(tex.get_width()/16),ceil(tex.get_height()/16)),
+			"obj_size" = Vector2i(ceil(tex.get_width()/16.0),ceil(tex.get_height()/16.0)),
 			"name" = path
 		})
 	rooms.push_back(room.new(null, null, Vector2(0,0), false, [],0,obstacles,wall_ornaments, floor_ornaments))
@@ -141,7 +141,7 @@ func _process(delta: float) -> void:
 			if !pigs_exist:
 				playerNode.increaseScore(100)
 				var count = randi_range(0,2)
-				precinctNode.inventPig(count, room_index)
+				#precinctNode.inventPig(count, room_index)
 				if (count>0):
 					pigs_exist = true
 			if pigs_exist:
@@ -151,7 +151,7 @@ func _process(delta: float) -> void:
 			wrongMaps+=1			 
 		var newroom = rooms[room_index].doors[doorkey].room_index
 		
-		#uinode.toggle_player_highlight(room_index, false)
+		uinode.toggle_player_highlight(room_index, false)
 		if(newroom != null):
 			room_index = newroom
 			load_room(room_index, door_translate[doorkey])
@@ -162,8 +162,8 @@ func _process(delta: float) -> void:
 				door_translate[doorkey], 
 				rooms[room_index].world_coord
 					+ Vector2i(
-					door.coord if (doorkey=="up"||doorkey=="down") else walls["right"] - walls["left"] - 1 if (doorkey=="right") else 0, 
-					door.coord if (doorkey=="left"||doorkey=="right") else walls["down"] - walls["up"] - 1 if (doorkey=="down") else 0
+					door.coord if (doorkey=="up"||doorkey=="down") else rooms[room_index].width if (doorkey=="right") else 0, 
+					door.coord if (doorkey=="left"||doorkey=="right") else rooms[room_index].height if (doorkey=="down") else 0
 					),
 				rooms[room_index].doors[doorkey].mapped,
 				rooms,
@@ -182,7 +182,7 @@ func _process(delta: float) -> void:
 
 func load_room(index, side) -> void:
 	
-	#uinode.toggle_player_highlight(index, true)
+	uinode.toggle_player_highlight(index, true)
 	for obstacle_node in obstacle_nodes:
 		obstacle_node.free()
 	obstacle_nodes = []
@@ -266,30 +266,40 @@ func load_room(index, side) -> void:
 				continue
 			roomNode.set_cell(Vector2i(x, y), 0, tiles[tilestring])
 			
-	#for ornament in rooms[room_index].this_floor_ornament:
-		#var obs_sprite = Sprite2D.new()
-		#var texture
-		#for ornament_texture in floor_ornaments:
-			#if(ornament_texture["name"] == ornament["name"]):
-				#texture = ornament_texture["texture"]
-		#obs_sprite.set_texture(texture)
-		#obs_sprite.rotate(ornament["rot"]*PI/2)
-		#obs_sprite.set_centered(false)
-		#obs_sprite.translate(Vector2( (walls["left"]+ornament["pos"].x+2)*16, (walls["up"]+ornament["pos"].y+4)*16))
-		#furniture_layer.add_child(obs_sprite)
-		#obstacle_nodes.push_back(obs_sprite)
-	#for obstacle in rooms[room_index].this_obstacles:
-		#var obs_sprite = Sprite2D.new()
-		#var texture
-		#for obstacle_texture in obstacles:
-			#if(obstacle_texture["name"] == obstacle["name"]):
-				#texture = obstacle_texture["texture"]
-		#obs_sprite.set_texture(texture)
-		#obs_sprite.rotate(obstacle["rot"]*PI/2)
-		#obs_sprite.set_centered(false)
-		#obs_sprite.translate(Vector2( (walls["left"]+obstacle["pos"].x+2)*16, (walls["up"]+obstacle["pos"].y+4)*16))
-		#furniture_layer.add_child(obs_sprite)
-		#obstacle_nodes.push_back(obs_sprite)
+	for ornament in rooms[room_index].this_floor_ornament:
+		var obs_sprite = Sprite2D.new()
+		obs_sprite.set_centered(false)
+		var texture
+		for ornament_texture in floor_ornaments:
+			if(ornament_texture["name"] == ornament["name"]):
+				texture = ornament_texture["texture"]
+		obs_sprite.set_texture(texture)
+		obs_sprite.rotate(ornament["rot"]*PI/2)
+		var object_vector = Vector2(ornament["size"]).rotated(ornament["rot"]*PI/2)
+		var translate = Vector2(
+			walls["left"]+ornament["pos"].x + 1 - min(0, object_vector.x),
+			walls["up"]+ornament["pos"].y + 1 - min(0, object_vector.y),
+		)
+		obs_sprite.translate(Vector2(translate)*16)
+		furniture_layer.add_child(obs_sprite)
+		obstacle_nodes.push_back(obs_sprite)
+	for obstacle in rooms[room_index].this_obstacles:
+		var obs_sprite = Sprite2D.new()
+		obs_sprite.set_centered(false)
+		var texture
+		for obstacle_texture in obstacles:
+			if(obstacle_texture["name"] == obstacle["name"]):
+				texture = obstacle_texture["texture"]
+		obs_sprite.set_texture(texture)
+		obs_sprite.rotate(obstacle["rot"]*PI/2)
+		var object_vector = Vector2(obstacle["size"]).rotated(obstacle["rot"]*PI/2)
+		var translate = Vector2(
+			walls["left"]+obstacle["pos"].x + 1 - min(0, object_vector.x),
+			walls["up"]+obstacle["pos"].y + 1 - min(0, object_vector.y),
+		)
+		obs_sprite.translate(Vector2(translate)*16)
+		furniture_layer.add_child(obs_sprite)
+		obstacle_nodes.push_back(obs_sprite)
 		
 	precinctNode.killPigs()
 	
@@ -315,7 +325,7 @@ func map_room() -> void:
 	new_room_map_outside.set_begin(
 		minimap.get_size()/2 + Vector2(roomcoord)
 	)
-	new_room_map_outside.set_size(roomsize)
+	new_room_map_outside.set_size(roomsize + Vector2(1,1))
 	
 	new_room_map_outside.set_color(linecolor)
 	
@@ -340,12 +350,12 @@ func map_room() -> void:
 		door_line.name = doorkey
 		new_room_map_outside.add_child(door_line)
 		door_line.set_begin(Vector2i(
-			door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x - 1 if (doorkey=="right") else 0, 
-			door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y - 1 if (doorkey=="down") else 0)
+			door.coord if (doorkey=="up"||doorkey=="down") else roomsize.x if (doorkey=="right") else 0, 
+			door.coord if (doorkey=="left"||doorkey=="right") else roomsize.y if (doorkey=="down") else 0)
 		)
 		door_line.set_size(doormaplinesize[doorkey])
-		if(door.coord == (roomsize.x if (doorkey=="up"||doorkey=="down") else roomsize.y) - 1):
-			door_line.set_size(Vector2(1,1))
+		#if(door.coord == (roomsize.x if (doorkey=="up"||doorkey=="down") else roomsize.y) - 1):
+			#door_line.set_size(Vector2(1,1))
 		door_line.set_color(doorcolor if rooms[room_index].doors[doorkey].mapped else linecolor)
 	
 	uinode.toggle_player_highlight(room_index, true)
